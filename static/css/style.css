@@ -98,12 +98,18 @@ body {
   width: 42px;
   height: 42px;
   border-radius: var(--radius-sm);
-  background: var(--red-gradient);
+  background: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.4rem;
-  box-shadow: 0 0 18px rgba(239, 68, 68, 0.45);
+  padding: 4px;
+  box-shadow: 0 0 16px rgba(239, 68, 68, 0.35);
+}
+
+.brand-logo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
 .brand-text h1 {
