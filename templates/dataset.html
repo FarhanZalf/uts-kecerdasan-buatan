@@ -1,162 +1,149 @@
 {% extends 'base.html' %}
 
-{% block title %}Eksplorasi Dataset | Klasifikasi Bunga Iris{% endblock %}
+{% block title %}Dataset GAIKINDO | Prediksi Penjualan Mobil Toyota{% endblock %}
 
 {% block content %}
 <div class="card" style="margin-bottom: 2rem;">
     <div class="card-header">
         <div>
-            <span class="badge-tag">Kriteria 1 UTS</span>
-            <h2 class="card-title" style="font-size: 1.6rem;">📚 Sumber & Karakteristik Dataset</h2>
+            <span class="badge-tag">Kriteria 7 Butir A & B UTS</span>
+            <h2 class="card-title" style="font-size: 1.6rem;">📊 Sumber & Karakteristik Data Time Series GAIKINDO</h2>
         </div>
         <a href="{{ url_for('download_dataset') }}" class="btn btn-secondary" style="font-size: 0.85rem; padding: 0.5rem 1rem;">
-            📥 Unduh File iris.csv
+            📥 Unduh Dataset CSV
         </a>
     </div>
-    
+
     <p style="color: var(--text-muted); margin-bottom: 1.5rem;">
-        Dataset yang digunakan dalam penelitian ini adalah <strong>Iris Dataset</strong> yang diperoleh dari repositori resmi 
-        <a href="https://archive.ics.uci.edu/dataset/53/iris" target="_blank" style="color: var(--primary-light); text-decoration: underline;">
-            UCI Machine Learning Repository
-        </a>. Dataset ini diperkenalkan oleh biolog dan statistikawan Ronald A. Fisher pada tahun 1936 dan menjadi salah satu dataset benchmark paling terkenal dalam dunia machine learning.
+        Dataset yang digunakan dalam penelitian ini adalah data deret waktu (<em>time series</em>) penjualan bulanan mobil Toyota di Indonesia yang dipublikasikan secara resmi oleh 
+        <a href="https://www.gaikindo.or.id/indonesian-automobile-industry-data/" target="_blank" style="color: #f87171; text-decoration: underline;">
+            GAIKINDO (Gabungan Industri Kendaraan Bermotor Indonesia)
+        </a> pada bagian <em>Indonesian Automobile Wholesales by Brand</em>. Data ini mencakup 149 bulan pengamatan dari Januari 2011 hingga Mei 2023.
     </p>
 
-    <div class="grid-3" style="margin-bottom: 1rem;">
+    <div class="grid-4" style="margin-bottom: 1rem;">
         <div class="card" style="background: rgba(255, 255, 255, 0.02);">
-            <div style="font-size: 0.8rem; color: var(--text-dim); text-transform: uppercase;">Jumlah Baris / Sampel</div>
-            <div style="font-size: 1.8rem; font-weight: 700; color: #ffffff; margin-top: 0.3rem;">150 Data</div>
-            <div style="font-size: 0.82rem; color: var(--text-muted);">50 per kelas (Sangat Seimbang)</div>
+            <div style="font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase;">Total Observasi</div>
+            <div style="font-size: 1.8rem; font-weight: 700; color: #ffffff; margin-top: 0.2rem;">149 Bulan</div>
+            <div style="font-size: 0.8rem; color: var(--text-muted);">12 Tahun 5 Bulan</div>
         </div>
         <div class="card" style="background: rgba(255, 255, 255, 0.02);">
-            <div style="font-size: 0.8rem; color: var(--text-dim); text-transform: uppercase;">Jumlah Fitur Input</div>
-            <div style="font-size: 1.8rem; font-weight: 700; color: #38bdf8; margin-top: 0.3rem;">4 Numerik</div>
-            <div style="font-size: 0.82rem; color: var(--text-muted);">Satuan pengukuran sentimeter (cm)</div>
+            <div style="font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase;">Penjualan Terendah</div>
+            <div style="font-size: 1.8rem; font-weight: 700; color: #f87171; margin-top: 0.2rem;">
+                {{ "{:,}".format(metrics.dataset_info.stats.min_sales) }}
+            </div>
+            <div style="font-size: 0.8rem; color: var(--text-muted);">Mei 2020 (Pandemi)</div>
         </div>
         <div class="card" style="background: rgba(255, 255, 255, 0.02);">
-            <div style="font-size: 0.8rem; color: var(--text-dim); text-transform: uppercase;">Kondisi Missing Value</div>
-            <div style="font-size: 1.8rem; font-weight: 700; color: #34d399; margin-top: 0.3rem;">0 (Bersih)</div>
-            <div style="font-size: 0.82rem; color: var(--text-muted);">Tidak ada data kosong / null</div>
+            <div style="font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase;">Penjualan Tertinggi</div>
+            <div style="font-size: 1.8rem; font-weight: 700; color: #34d399; margin-top: 0.2rem;">
+                {{ "{:,}".format(metrics.dataset_info.stats.max_sales) }}
+            </div>
+            <div style="font-size: 0.8rem; color: var(--text-muted);">Juli 2013</div>
+        </div>
+        <div class="card" style="background: rgba(255, 255, 255, 0.02);">
+            <div style="font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase;">Rata-Rata Bulanan</div>
+            <div style="font-size: 1.8rem; font-weight: 700; color: #38bdf8; margin-top: 0.2rem;">
+                {{ "{:,}".format(metrics.dataset_info.stats.mean_sales) }}
+            </div>
+            <div style="font-size: 0.8rem; color: var(--text-muted);">Unit per bulan</div>
         </div>
     </div>
 </div>
 
-<!-- Statistik Fitur & Preprocessing -->
+<!-- Penjelasan Preprocessing & Pembagian Data Time Series -->
 <div class="grid-2">
-    <!-- Statistik Deskriptif Fitur -->
     <div class="card">
         <div class="card-header">
-            <h3 class="card-title">📐 Statistik Deskriptif 4 Fitur</h3>
-        </div>
-        <div class="table-responsive">
-            <table class="custom-table">
-                <thead>
-                    <tr>
-                        <th>Nama Atribut Fitur</th>
-                        <th>Min (cm)</th>
-                        <th>Max (cm)</th>
-                        <th>Mean (cm)</th>
-                        <th>Std Dev</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><strong>Sepal Length</strong> (Panjang Kelopak)</td>
-                        <td>{{ metrics.dataset_info.feature_statistics.sepal_length.min }}</td>
-                        <td>{{ metrics.dataset_info.feature_statistics.sepal_length.max }}</td>
-                        <td>{{ metrics.dataset_info.feature_statistics.sepal_length.mean }}</td>
-                        <td>{{ metrics.dataset_info.feature_statistics.sepal_length.std }}</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Sepal Width</strong> (Lebar Kelopak)</td>
-                        <td>{{ metrics.dataset_info.feature_statistics.sepal_width.min }}</td>
-                        <td>{{ metrics.dataset_info.feature_statistics.sepal_width.max }}</td>
-                        <td>{{ metrics.dataset_info.feature_statistics.sepal_width.mean }}</td>
-                        <td>{{ metrics.dataset_info.feature_statistics.sepal_width.std }}</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Petal Length</strong> (Panjang Mahkota)</td>
-                        <td>{{ metrics.dataset_info.feature_statistics.petal_length.min }}</td>
-                        <td>{{ metrics.dataset_info.feature_statistics.petal_length.max }}</td>
-                        <td>{{ metrics.dataset_info.feature_statistics.petal_length.mean }}</td>
-                        <td>{{ metrics.dataset_info.feature_statistics.petal_length.std }}</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Petal Width</strong> (Lebar Mahkota)</td>
-                        <td>{{ metrics.dataset_info.feature_statistics.petal_width.min }}</td>
-                        <td>{{ metrics.dataset_info.feature_statistics.petal_width.max }}</td>
-                        <td>{{ metrics.dataset_info.feature_statistics.petal_width.mean }}</td>
-                        <td>{{ metrics.dataset_info.feature_statistics.petal_width.std }}</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <!-- Preprocessing & Data Split -->
-    <div class="card">
-        <div class="card-header">
-            <h3 class="card-title">⚙️ Preprocessing & Pembagian Data (Split)</h3>
+            <h3 class="card-title">⚙️ Tahapan Preprocessing Data Time Series</h3>
         </div>
         <ul style="padding-left: 1.2rem; color: var(--text-muted); font-size: 0.92rem; line-height: 1.8;">
             <li>
-                <strong style="color: #ffffff;">1. Pembersihan Data (Data Cleaning):</strong> 
-                Dataset asli diverifikasi bebas dari baris kosong (blank lines) dan spasi berlebih pada label kelas.
+                <strong style="color: #ffffff;">1. Pembentukan Fitur Lag (Sliding Window):</strong> 
+                Data deret waktu diubah menjadi format matriks supervised learning menggunakan <strong>10 Lag Feature</strong> (data $t-10, t-9, ..., t-1$ digunakan sebagai input untuk memprediksi nilai pada bulan $t$).
             </li>
             <li>
-                <strong style="color: #ffffff;">2. Pembagian Train-Test Split (80% : 20%):</strong>
-                Data dibagi menjadi <strong>120 sampel data training</strong> untuk pembentukan model pohon keputusan dan <strong>30 sampel data testing</strong> untuk pengujian evaluasi.
+                <strong style="color: #ffffff;">2. Normalisasi Data (MinMaxScaler):</strong> 
+                Seluruh data penjualan dinormalisasi ke rentang [0, 1] agar gradien penurunan pada algoritma backpropagation jaringan syaraf tiruan dapat konvergen secara optimal dan cepat.
             </li>
             <li>
-                <strong style="color: #ffffff;">3. Stratified Sampling:</strong>
-                Pembagian data menggunakan parameter <code>stratify=y</code> sehingga komposisi kelas pada data testing tetap seimbang (10 Setosa, 10 Versicolor, 10 Virginica).
-            </li>
-            <li>
-                <strong style="color: #ffffff;">4. Validasi Silang (10-Fold Cross-Validation):</strong>
-                Sebagai pembanding dengan artikel jurnal referensi, kami juga menerapkan 10-Fold Cross-Validation untuk menjamin model tidak mengalami <em>overfitting</em>.
+                <strong style="color: #ffffff;">3. Penanganan Data Outlier & Null:</strong> 
+                Data historis diverifikasi lengkap 100% tanpa nilai kosong (no missing values) dari laporan bulanan GAIKINDO.
             </li>
         </ul>
     </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">📅 Pembagian Data Training & Testing</h3>
+        </div>
+        <p style="color: var(--text-muted); font-size: 0.92rem; margin-bottom: 1rem;">
+            Karena data berformat <em>time series</em>, pembagian data <strong>tidak boleh diacak (non-shuffled)</strong> agar tidak terjadi <em>data leakage</em> dari masa depan:
+        </p>
+        <div style="padding: 1rem; background: rgba(255, 255, 255, 0.03); border-radius: var(--radius-sm); margin-bottom: 0.8rem; border-left: 4px solid #38bdf8;">
+            <div style="font-weight: 700; color: #ffffff;">Data Training (133 Sampel)</div>
+            <div style="font-size: 0.85rem; color: var(--text-muted);">
+                Periode: <strong>{{ metrics.dataset_info.train_period }}</strong>. Digunakan untuk melatih bobot koneksi neuron MLP.
+            </div>
+        </div>
+        <div style="padding: 1rem; background: rgba(255, 255, 255, 0.03); border-radius: var(--radius-sm); border-left: 4px solid #ef4444;">
+            <div style="font-weight: 700; color: #ffffff;">Data Testing (6 Sampel Terakhir)</div>
+            <div style="font-size: 0.85rem; color: var(--text-muted);">
+                Periode: <strong>{{ metrics.dataset_info.test_period }}</strong>. Digunakan untuk menguji akurasi model pada data baru (persis seperti di jurnal Polinema).
+            </div>
+        </div>
+    </div>
 </div>
 
-<!-- Tabel Dataset Lengkap -->
+<!-- Tabel Dataset Lengkap 149 Baris -->
 <div class="card">
     <div class="card-header">
         <div>
-            <h3 class="card-title">📄 Data Mentah Dataset UCI Iris (150 Baris)</h3>
-            <span style="font-size: 0.8rem; color: var(--text-dim);">Gunakan kolom pencarian untuk menyaring data</span>
+            <h3 class="card-title">📋 Tabel Data Historis Penjualan Bulanan Toyota (149 Baris)</h3>
+            <span style="font-size: 0.8rem; color: var(--text-dim);">Gunakan pencarian untuk melihat tahun atau bulan tertentu</span>
         </div>
-        <div style="width: 260px;">
-            <input type="text" id="tableSearchInput" class="form-control" placeholder="🔍 Cari data atau spesies..." style="padding: 0.5rem 0.8rem; font-size: 0.85rem;">
+        <div style="width: 250px;">
+            <input type="text" id="tableSearchInput" class="form-control" placeholder="🔍 Cari tahun / bulan..." style="padding: 0.5rem 0.8rem; font-size: 0.85rem;">
         </div>
     </div>
 
     <div class="table-responsive" style="max-height: 480px; overflow-y: auto;">
         <table class="custom-table" id="datasetTable">
             <thead>
-                <tr style="position: sticky; top: 0; z-index: 10; background: #111827;">
+                <tr style="position: sticky; top: 0; z-index: 10; background: #0e172a;">
                     <th>No</th>
-                    <th>Sepal Length (cm)</th>
-                    <th>Sepal Width (cm)</th>
-                    <th>Petal Length (cm)</th>
-                    <th>Petal Width (cm)</th>
-                    <th>Spesies Target</th>
+                    <th>Periode</th>
+                    <th>Tahun</th>
+                    <th>Nama Bulan</th>
+                    <th>Jumlah Penjualan (Unit)</th>
+                    <th>Status Data</th>
                 </tr>
             </thead>
             <tbody>
                 {% for row in data %}
                 <tr>
                     <td style="color: var(--text-dim);">{{ loop.index }}</td>
-                    <td>{{ row.sepal_length }}</td>
-                    <td>{{ row.sepal_width }}</td>
-                    <td>{{ row.petal_length }}</td>
-                    <td>{{ row.petal_width }}</td>
+                    <td><strong style="color: #ffffff;">{{ row.periode }}</strong></td>
+                    <td>{{ row.tahun }}</td>
+                    <td>{{ row.nama_bulan }}</td>
                     <td>
-                        {% if row.species == 'Iris-setosa' %}
-                            <span class="badge-tag badge-setosa" style="margin: 0; font-size: 0.72rem;">Setosa</span>
-                        {% elif row.species == 'Iris-versicolor' %}
-                            <span class="badge-tag badge-versicolor" style="margin: 0; font-size: 0.72rem;">Versicolor</span>
+                        <span style="font-family: var(--font-mono); font-weight: 700; color: #38bdf8;">
+                            {{ "{:,}".format(row.penjualan_unit) }}
+                        </span>
+                    </td>
+                    <td>
+                        {% if loop.index > 143 %}
+                            <span class="badge-tag" style="margin: 0; padding: 0.2rem 0.6rem; font-size: 0.72rem; background: rgba(239, 68, 68, 0.2); color: #f87171;">
+                                Data Testing
+                            </span>
+                        {% elif loop.index <= 10 %}
+                            <span class="badge-tag" style="margin: 0; padding: 0.2rem 0.6rem; font-size: 0.72rem; background: rgba(148, 163, 184, 0.2); color: #94a3b8;">
+                                Initial Lag
+                            </span>
                         {% else %}
-                            <span class="badge-tag badge-virginica" style="margin: 0; font-size: 0.72rem;">Virginica</span>
+                            <span class="badge-tag badge-cyan" style="margin: 0; padding: 0.2rem 0.6rem; font-size: 0.72rem;">
+                                Data Training
+                            </span>
                         {% endif %}
                     </td>
                 </tr>

@@ -1,121 +1,123 @@
 {% extends 'base.html' %}
 
-{% block title %}Beranda | Klasifikasi Bunga Iris{% endblock %}
+{% block title %}Beranda | Prediksi Penjualan Mobil Toyota GAIKINDO{% endblock %}
 
 {% block content %}
 <!-- Hero Section -->
 <div class="hero">
-    <div class="badge-tag">✨ Project UTS Kecerdasan Buatan 2026/2027</div>
-    <h1 class="hero-title">Klasifikasi Cerdas <span class="gradient-text">Spesies Bunga Iris</span> Berbasis Decision Tree</h1>
-    <p class="hero-subtitle">
-        Aplikasi web interaktif untuk klasifikasi data bunga Iris menggunakan algoritma <strong>Decision Tree (CART Gini Index)</strong> dan <strong>Multilayer Perceptron (MLP)</strong>. Dilengkapi evaluasi Confusion Matrix serta analisis komparasi terhadap artikel jurnal ilmiah referensi.
-    </p>
+    <div class="hero-text">
+        <div class="badge-tag">🚗 Project UTS Kecerdasan Buatan (Poin 7 & 8)</div>
+        <h1 class="hero-title">
+            Peramalan Tren <span class="gradient-text">Penjualan Mobil Toyota</span> di Indonesia
+        </h1>
+        <p class="hero-subtitle">
+            Aplikasi web cerdas berbasis <strong>Multilayer Perceptron (MLP)</strong> untuk prediksi data <em>time series</em> penjualan kendaraan bulanan di Indonesia menggunakan data resmi <strong>GAIKINDO</strong> dan rujukan ilmiah dari <strong>Jurnal Informatika Polinema (2024)</strong>.
+        </p>
+
+        <div class="hero-meta">
+            <div class="meta-item">
+                <span class="label">Sumber Dataset</span>
+                <span class="value">GAIKINDO (2011 – 2023)</span>
+            </div>
+            <div class="meta-item">
+                <span class="label">Model AI</span>
+                <span class="value">MLP Time Series (10-15-1)</span>
+            </div>
+            <div class="meta-item">
+                <span class="label">Evaluasi MAE</span>
+                <span class="value" style="color: #34d399;">{{ metrics.model_evaluation.mae }} Unit (Sangat Akurat)</span>
+            </div>
+            <div class="meta-item">
+                <span class="label">Jurnal Acuan</span>
+                <span class="value">JIP Polinema Vol. 11 No. 1 (2024)</span>
+            </div>
+        </div>
+    </div>
     
-    <div class="hero-meta">
-        <div class="meta-item">
-            <span class="label">Dataset Acuan</span>
-            <span class="value">UCI Machine Learning Repository (Iris)</span>
-        </div>
-        <div class="meta-item">
-            <span class="label">Algoritma Utama</span>
-            <span class="value">Decision Tree (CART Gini)</span>
-        </div>
-        <div class="meta-item">
-            <span class="label">Akurasi Model</span>
-            <span class="value" style="color: #34d399;">{{ metrics.decision_tree.test_accuracy }}% (Test Set)</span>
-        </div>
-        <div class="meta-item">
-            <span class="label">Jurnal Referensi</span>
-            <span class="value">Jurnal MEANS Vol. 10 No. 1 (2025)</span>
-        </div>
+    <div class="hero-image-wrap">
+        <img src="{{ url_for('static', filename='img/toyota_hero.jpg') }}" alt="Toyota Indonesia Automotive">
     </div>
 </div>
 
-<!-- Quick Stat Cards -->
+<!-- 4 Quick Stat Cards -->
 <div class="grid-4">
     <div class="card stat-card">
-        <div class="stat-icon primary">📁</div>
+        <div class="stat-icon red">📈</div>
         <div class="stat-value">{{ metrics.dataset_info.total_samples }}</div>
-        <div class="stat-label">Total Sampel Data (UCI)</div>
+        <div class="stat-label">Bulan Data Historis (GAIKINDO)</div>
     </div>
     <div class="card stat-card">
-        <div class="stat-icon info">📏</div>
-        <div class="stat-value">4</div>
-        <div class="stat-label">Fitur Pengukuran (Sepal & Petal)</div>
+        <div class="stat-icon cyan">⏱️</div>
+        <div class="stat-value">12.5</div>
+        <div class="stat-label">Tahun Periode (2011 – 2023)</div>
     </div>
     <div class="card stat-card">
-        <div class="stat-icon success">🎯</div>
-        <div class="stat-value">{{ metrics.decision_tree.test_accuracy }}%</div>
-        <div class="stat-label">Akurasi Decision Tree</div>
+        <div class="stat-icon emerald">🎯</div>
+        <div class="stat-value">{{ metrics.model_evaluation.mae }}</div>
+        <div class="stat-label">MAE Selisih Rata-rata (Unit)</div>
     </div>
     <div class="card stat-card">
-        <div class="stat-icon warning">🌿</div>
-        <div class="stat-value">3</div>
-        <div class="stat-label">Kelas Spesies Bunga</div>
+        <div class="stat-icon blue">🧠</div>
+        <div class="stat-value">10-15-1</div>
+        <div class="stat-label">Arsitektur Multi-Layer Perceptron</div>
     </div>
 </div>
 
-<!-- Preview 3 Spesies Bunga -->
-<h2 style="font-family: var(--font-heading); font-size: 1.5rem; margin-bottom: 1.2rem; color: #ffffff;">
-    🌺 Tiga Spesies Bunga Iris yang Diklasifikasikan
-</h2>
-<div class="grid-3">
-    <!-- Iris Setosa -->
-    <div class="card">
-        <div style="height: 180px; border-radius: var(--radius-sm); overflow: hidden; margin-bottom: 1.2rem;">
-            <img src="{{ url_for('static', filename='img/setosa.jpg') }}" alt="Iris Setosa" style="width: 100%; height: 100%; object-fit: cover;">
-        </div>
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.6rem;">
-            <h3 style="font-family: var(--font-heading); font-size: 1.2rem; color: #ffffff;">Iris Setosa</h3>
-            <span class="badge-tag badge-setosa" style="margin: 0;">50 Sampel</span>
-        </div>
-        <p style="font-size: 0.88rem; color: var(--text-muted);">
-            Memiliki kelopak mahkota (petal) yang paling kecil dan lebar. Sangat mudah dipisahkan secara linier dari kedua spesies lainnya.
-        </p>
-    </div>
-
-    <!-- Iris Versicolor -->
-    <div class="card">
-        <div style="height: 180px; border-radius: var(--radius-sm); overflow: hidden; margin-bottom: 1.2rem;">
-            <img src="{{ url_for('static', filename='img/versicolor.jpg') }}" alt="Iris Versicolor" style="width: 100%; height: 100%; object-fit: cover;">
-        </div>
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.6rem;">
-            <h3 style="font-family: var(--font-heading); font-size: 1.2rem; color: #ffffff;">Iris Versicolor</h3>
-            <span class="badge-tag badge-versicolor" style="margin: 0;">50 Sampel</span>
-        </div>
-        <p style="font-size: 0.88rem; color: var(--text-muted);">
-            Spesies peralihan dengan ukuran kelopak dan mahkota sedang. Sebagian karakteristiknya beririsan dengan Iris Virginica.
-        </p>
-    </div>
-
-    <!-- Iris Virginica -->
-    <div class="card">
-        <div style="height: 180px; border-radius: var(--radius-sm); overflow: hidden; margin-bottom: 1.2rem;">
-            <img src="{{ url_for('static', filename='img/virginica.jpg') }}" alt="Iris Virginica" style="width: 100%; height: 100%; object-fit: cover;">
-        </div>
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.6rem;">
-            <h3 style="font-family: var(--font-heading); font-size: 1.2rem; color: #ffffff;">Iris Virginica</h3>
-            <span class="badge-tag badge-virginica" style="margin: 0;">50 Sampel</span>
-        </div>
-        <p style="font-size: 0.88rem; color: var(--text-muted);">
-            Spesies berukuran paling besar terutama pada panjang dan lebar mahkota (petal). Memerlukan aturan klasifikasi khusus pada ambang batas petal.
-        </p>
-    </div>
-</div>
-
-<!-- Navigasi Modul Utama -->
-<div class="card" style="margin-top: 1rem; background: linear-gradient(135deg, rgba(18, 26, 43, 0.9) 0%, rgba(26, 35, 56, 0.85) 100%);">
+<!-- Grafik Garis Tren Penjualan 2011 - 2023 (Interactive Chart.js) -->
+<div class="card" style="margin-bottom: 2rem;">
     <div class="card-header">
-        <h3 class="card-title">🚀 Menu Navigasi Modul Tugas UTS</h3>
+        <div>
+            <h3 class="card-title">📉 Tren Historis Penjualan Bulanan Toyota di Indonesia (2011 – 2023)</h3>
+            <span style="font-size: 0.8rem; color: var(--text-muted);">
+                Arahkan kursor pada garis untuk melihat rincian unit penjualan per bulan (terlihat drop drastis pada April 2020 akibat pandemi, dan lonjakan pasca insentif PPnBM)
+            </span>
+        </div>
+        <a href="{{ url_for('dataset_page') }}" class="btn btn-secondary" style="font-size: 0.85rem; padding: 0.4rem 0.9rem;">
+            Tabel Lengkap &rarr;
+        </a>
     </div>
-    <p style="color: var(--text-muted); font-size: 0.92rem; margin-bottom: 1.5rem;">
-        Seluruh kriteria yang ditentukan oleh Bu Abidatul Izzah, M.Kom telah diimplementasikan dalam modul-modul berikut:
-    </p>
-    <div style="display: flex; flex-wrap: wrap; gap: 1rem;">
-        <a href="{{ url_for('dataset_page') }}" class="btn btn-secondary">📊 1. Eksplorasi Dataset & Preprocessing</a>
-        <a href="{{ url_for('evaluasi_page') }}" class="btn btn-secondary">📈 2. Evaluasi Matrix & Decision Tree</a>
-        <a href="{{ url_for('prediksi_page') }}" class="btn btn-primary">🎯 3. Pengujian Live Data Baru</a>
-        <a href="{{ url_for('komparasi_page') }}" class="btn btn-secondary">⚖️ 4. Analisis Komparasi Jurnal</a>
+
+    <div class="chart-container">
+        <canvas id="historicalSalesChart"></canvas>
     </div>
 </div>
+
+<!-- Modul UTS Kunci -->
+<div class="grid-2">
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">🎯 Fitur Simulasi Prediksi Waktu</h3>
+        </div>
+        <p style="color: var(--text-muted); font-size: 0.92rem; margin-bottom: 1.2rem;">
+            Sistem dapat melakukan peramalan iteratif berbasis <em>sliding window</em> untuk memperkirakan volume penjualan mobil 1 s.d. 6 bulan mendatang. Sangat berguna untuk manajemen persediaan stok pabrikan dan dealer.
+        </p>
+        <a href="{{ url_for('prediksi_page') }}" class="btn btn-primary" style="font-size: 0.9rem;">
+            🔮 Coba Simulasi Prediksi Masa Depan &rarr;
+        </a>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">⚖️ Komparasi Hasil dengan Jurnal Polinema</h3>
+        </div>
+        <p style="color: var(--text-muted); font-size: 0.92rem; margin-bottom: 1.2rem;">
+            Menjawab kriteria butir ke-8 soal UTS: Analisis persamaan, perbedaan, dan penyebab variasi hasil model web kami terhadap publikasi resmi di <strong>Jurnal Informatika Polinema (2024)</strong>.
+        </p>
+        <a href="{{ url_for('komparasi_page') }}" class="btn btn-secondary" style="font-size: 0.9rem;">
+            📑 Lihat Analisis Komparasi Jurnal &rarr;
+        </a>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const labels = {{ chart_labels | tojson }};
+        const salesData = {{ chart_sales | tojson }};
+        if (window.renderSalesTrendChart) {
+            window.renderSalesTrendChart('historicalSalesChart', labels, salesData);
+        }
+    });
+</script>
 {% endblock %}

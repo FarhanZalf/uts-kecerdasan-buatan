@@ -3,28 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Klasifikasi Bunga Iris | UTS Kecerdasan Buatan{% endblock %}</title>
-    <meta name="description" content="Aplikasi Web Klasifikasi Dataset Bunga Iris Menggunakan Decision Tree (CART) Berbasis Flask - UTS Kecerdasan Buatan D3 Manajemen Informatika PSDKU Kediri">
+    <title>{% block title %}Prediksi Penjualan Mobil Toyota | UTS Kecerdasan Buatan{% endblock %}</title>
+    <meta name="description" content="Sistem Prediksi Penjualan Mobil Toyota di Indonesia Menggunakan Time Series Multilayer Perceptron (MLP) Berbasis Flask - UTS Kecerdasan Buatan D3 Manajemen Informatika PSDKU Kediri">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220%22><text y=%2222%22 font-size=%2222%22>🌸</text></svg>">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220%200%20100%20100%22><text y=%22.9em%22 font-size=%2290%22>🚗</text></svg>">
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <!-- Navbar -->
     <nav class="navbar">
         <div class="nav-container">
             <a href="{{ url_for('index') }}" class="nav-brand">
-                <div class="brand-icon">🌸</div>
+                <div class="brand-icon">🚗</div>
                 <div class="brand-text">
-                    <h1>Iris Classifier AI</h1>
-                    <span>UTS Kecerdasan Buatan</span>
+                    <h1>AutoPredict AI</h1>
+                    <span>Toyota Indonesia Forecasting</span>
                 </div>
             </a>
             <ul class="nav-links">
                 <li><a href="{{ url_for('index') }}" class="{% if request.path == '/' %}active{% endif %}">🏠 Beranda</a></li>
-                <li><a href="{{ url_for('dataset_page') }}" class="{% if request.path == '/dataset' %}active{% endif %}">📊 Dataset</a></li>
-                <li><a href="{{ url_for('evaluasi_page') }}" class="{% if request.path == '/evaluasi' %}active{% endif %}">📈 Evaluasi Model</a></li>
-                <li><a href="{{ url_for('prediksi_page') }}" class="{% if request.path == '/prediksi' %}active{% endif %}">🎯 Uji Prediksi</a></li>
-                <li><a href="{{ url_for('komparasi_page') }}" class="{% if request.path == '/komparasi' %}active{% endif %}">⚖️ Komparasi Jurnal</a></li>
+                <li><a href="{{ url_for('dataset_page') }}" class="{% if request.path == '/dataset' %}active{% endif %}">📊 Dataset GAIKINDO</a></li>
+                <li><a href="{{ url_for('evaluasi_page') }}" class="{% if request.path == '/evaluasi' %}active{% endif %}">📈 Evaluasi MLP</a></li>
+                <li><a href="{{ url_for('prediksi_page') }}" class="{% if request.path == '/prediksi' %}active{% endif %}">🔮 Uji Prediksi Waktu</a></li>
+                <li><a href="{{ url_for('komparasi_page') }}" class="{% if request.path == '/komparasi' %}active{% endif %}">⚖️ Komparasi Jurnal Polinema</a></li>
             </ul>
         </div>
     </nav>

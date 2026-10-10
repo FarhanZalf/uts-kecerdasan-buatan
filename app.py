@@ -7,31 +7,22 @@ from flask import Flask, render_template, request, jsonify, send_file
 
 app = Flask(__name__)
 
-# Direktori base
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DATASET_PATH = os.path.join(BASE_DIR, 'dataset', 'iris.csv')
+DATASET_PATH = os.path.join(BASE_DIR, 'dataset', 'penjualan_toyota_gaikindo.csv')
 METRICS_PATH = os.path.join(BASE_DIR, 'models', 'metrics.json')
-DT_MODEL_PATH = os.path.join(BASE_DIR, 'models', 'decision_tree_model.pkl')
-MLP_MODEL_PATH = os.path.join(BASE_DIR, 'models', 'mlp_model.pkl')
+MODEL_PATH = os.path.join(BASE_DIR, 'models', 'mlp_time_series.pkl')
 
-# Helper: Memuat metadata evaluasi
 def load_metrics():
     if os.path.exists(METRICS_PATH):
         with open(METRICS_PATH, 'r') as f:
             return json.load(f)
     return {}
 
-# Helper: Memuat model
-dt_model = None
-mlp_data = None
+def load_model_artifacts():
+    if os.path.exists(MODEL_PATH):
+        return joblib.load(MODEL_PATH)
+    return None
 
-if os.path.exists(DT_MODEL_PATH):
-    dt_model = joblib.load(DT_MODEL_PATH)
-
-if os.path.exists(MLP_MODEL_PATH):
-    mlp_data = joblib.load(MLP_MODEL_PATH)
-
-# Helper: Memuat dataset DataFrame
 def load_dataset_df():
     if os.path.exists(DATASET_PATH):
         return pd.read_csv(DATASET_PATH)
@@ -42,146 +33,106 @@ def load_dataset_df():
 @app.route('/')
 def index():
     metrics = load_metrics()
-    return render_template('index.html', metrics=metrics)
+    df = load_dataset_df()
+    
+    # Siapkan data untuk grafik historis di beranda
+    chart_labels = df['periode'].tolist() if not df.empty else []
+    chart_sales = df['penjualan_unit'].tolist() if not df.empty else []
+    
+    return render_template('index.html', 
+                           metrics=metrics, 
+                           chart_labels=chart_labels, 
+                           chart_sales=chart_sales)
 
 @app.route('/dataset')
 def dataset_page():
     metrics = load_metrics()
     df = load_dataset_df()
-    # Ambil seluruh baris data sebagai list of dict untuk preview di tabel
     records = df.to_dict(orient='records') if not df.empty else []
     return render_template('dataset.html', metrics=metrics, data=records, total_rows=len(records))
 
 @app.route('/download-dataset')
 def download_dataset():
     if os.path.exists(DATASET_PATH):
-        return send_file(DATASET_PATH, as_attachment=True, download_name='iris.csv')
+        return send_file(DATASET_PATH, as_attachment=True, download_name='penjualan_toyota_gaikindo.csv')
     return "File tidak ditemukan", 404
 
 @app.route('/evaluasi')
 def evaluasi_page():
     metrics = load_metrics()
-    return render_template('evaluasi.html', metrics=metrics)
+    
+    # Ambil data evaluasi test set untuk grafik
+    test_results = metrics.get('model_evaluation', {}).get('test_results', [])
+    test_labels = [item['periode'] for item in test_results]
+    actual_vals = [item['aktual'] for item in test_results]
+    pred_vals = [item['prediksi'] for item in test_results]
+    
+    return render_template('evaluasi.html', 
+                           metrics=metrics,
+                           test_labels=test_labels,
+                           actual_vals=actual_vals,
+                           pred_vals=pred_vals)
 
 @app.route('/prediksi', methods=['GET', 'POST'])
 def prediksi_page():
-    result = None
-    input_data = {
-        'sepal_length': 5.1,
-        'sepal_width': 3.5,
-        'petal_length': 1.4,
-        'petal_width': 0.2,
-        'algorithm': 'dt'
-    }
+    metrics = load_metrics()
+    artifacts = load_model_artifacts()
+    df = load_dataset_df()
+    
+    future_labels_all = ['2023-06 (Juni 2023)', '2023-07 (Juli 2023)', '2023-08 (Agustus 2023)', 
+                         '2023-09 (September 2023)', '2023-10 (Oktober 2023)', '2023-11 (November 2023)']
+    
+    selected_steps = 1
+    forecast_results = None
     
     if request.method == 'POST':
         try:
-            sl = float(request.form.get('sepal_length', 5.1))
-            sw = float(request.form.get('sepal_width', 3.5))
-            pl = float(request.form.get('petal_length', 1.4))
-            pw = float(request.form.get('petal_width', 0.2))
-            algorithm = request.form.get('algorithm', 'dt')
+            selected_steps = int(request.form.get('horizon', 1))
+        except ValueError:
+            selected_steps = 1
             
-            input_data = {
-                'sepal_length': sl,
-                'sepal_width': sw,
-                'petal_length': pl,
-                'petal_width': pw,
-                'algorithm': algorithm
-            }
+        if artifacts:
+            mlp = artifacts['model']
+            scaler_X = artifacts['scaler_X']
+            scaler_y = artifacts['scaler_y']
+            current_window = list(artifacts['last_window'])
             
-            feature_cols = ['sepal_length', 'sepal_width', 'petal_length', 'petal_width']
-            features_df = pd.DataFrame([[sl, sw, pl, pw]], columns=feature_cols)
-            classes = ['Iris-setosa', 'Iris-versicolor', 'Iris-virginica']
+            forecast_items = []
+            for i in range(selected_steps):
+                input_scaled = scaler_X.transform([current_window])
+                pred_s = mlp.predict(input_scaled)
+                pred_val = float(scaler_y.inverse_transform(pred_s.reshape(-1, 1))[0][0])
+                pred_int = int(round(pred_val))
+                
+                forecast_items.append({
+                    'step': i + 1,
+                    'periode': future_labels_all[i],
+                    'prediksi_unit': pred_int
+                })
+                
+                # geser window
+                current_window.pop(0)
+                current_window.append(pred_val)
+                
+            forecast_results = forecast_items
             
-            if algorithm == 'mlp' and mlp_data is not None:
-                model = mlp_data['model']
-                scaler = mlp_data['scaler']
-                scaled_features = scaler.transform(features_df)
-                pred_label = model.predict(scaled_features)[0]
-                proba = model.predict_proba(scaled_features)[0]
-                algo_title = "Multilayer Perceptron (MLP)"
-            else:
-                pred_label = dt_model.predict(features_df)[0]
-                proba = dt_model.predict_proba(features_df)[0]
-                algo_title = "Decision Tree (CART Gini)"
-            
-            # Siapkan info spesies
-            species_info = {
-                'Iris-setosa': {
-                    'name': 'Iris Setosa',
-                    'image': 'setosa.jpg',
-                    'desc': 'Memiliki ukuran mahkota (petal) yang pendek dan lebar, serta kelopak (sepal) yang proporsional. Sangat mudah dipisahkan secara linier dari spesies lain.',
-                    'badge_class': 'badge-setosa'
-                },
-                'Iris-versicolor': {
-                    'name': 'Iris Versicolor',
-                    'image': 'versicolor.jpg',
-                    'desc': 'Merupakan spesies berukuran sedang dengan kelopak dan mahkota yang seimbang. Memiliki kemiripan ukuran dengan Iris Virginica di beberapa rentang nilai.',
-                    'badge_class': 'badge-versicolor'
-                },
-                'Iris-virginica': {
-                    'name': 'Iris Virginica',
-                    'image': 'virginica.jpg',
-                    'desc': 'Memiliki ukuran mahkota (petal) yang paling panjang dan lebar di antara ketiga spesies. Ciri utamanya tampak pada petal length > 4.8 cm.',
-                    'badge_class': 'badge-virginica'
-                }
-            }
-            
-            probabilities = [
-                {'class_name': classes[i], 'label': species_info[classes[i]]['name'], 'score': round(float(proba[i]) * 100, 1)}
-                for i in range(len(classes))
-            ]
-            
-            result = {
-                'prediction': pred_label,
-                'info': species_info.get(pred_label, species_info['Iris-setosa']),
-                'algorithm_used': algo_title,
-                'probabilities': probabilities,
-                'confidence': round(float(np.max(proba)) * 100, 1)
-            }
-        except Exception as e:
-            result = {'error': str(e)}
-            
-    return render_template('prediksi.html', input_data=input_data, result=result)
+    # Default 1 bulan jika belum submit
+    if forecast_results is None and metrics.get('forecast_future'):
+        forecast_results = [{
+            'step': 1,
+            'periode': future_labels_all[0],
+            'prediksi_unit': metrics['forecast_future']['predictions'][0]
+        }]
+        
+    return render_template('prediksi.html', 
+                           metrics=metrics, 
+                           selected_steps=selected_steps,
+                           forecast_results=forecast_results)
 
 @app.route('/komparasi')
 def komparasi_page():
     metrics = load_metrics()
     return render_template('komparasi.html', metrics=metrics)
-
-# API endpoint untuk prediksi via AJAX (opsional)
-@app.route('/api/predict', methods=['POST'])
-def api_predict():
-    data = request.get_json() or {}
-    try:
-        sl = float(data.get('sepal_length', 5.1))
-        sw = float(data.get('sepal_width', 3.5))
-        pl = float(data.get('petal_length', 1.4))
-        pw = float(data.get('petal_width', 0.2))
-        algorithm = data.get('algorithm', 'dt')
-        
-        feature_cols = ['sepal_length', 'sepal_width', 'petal_length', 'petal_width']
-        features_df = pd.DataFrame([[sl, sw, pl, pw]], columns=feature_cols)
-        classes = ['Iris-setosa', 'Iris-versicolor', 'Iris-virginica']
-        
-        if algorithm == 'mlp' and mlp_data is not None:
-            model = mlp_data['model']
-            scaler = mlp_data['scaler']
-            scaled_features = scaler.transform(features_df)
-            pred_label = model.predict(scaled_features)[0]
-            proba = model.predict_proba(scaled_features)[0].tolist()
-        else:
-            pred_label = dt_model.predict(features_df)[0]
-            proba = dt_model.predict_proba(features_df)[0].tolist()
-            
-        return jsonify({
-            'status': 'success',
-            'prediction': pred_label,
-            'probabilities': {classes[i]: round(proba[i] * 100, 2) for i in range(len(classes))}
-        })
-    except Exception as e:
-        return jsonify({'status': 'error', 'message': str(e)}), 400
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)

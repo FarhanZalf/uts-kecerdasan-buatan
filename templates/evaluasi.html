@@ -1,219 +1,151 @@
 {% extends 'base.html' %}
 
-{% block title %}Evaluasi Model | Klasifikasi Bunga Iris{% endblock %}
+{% block title %}Evaluasi Model MLP | Prediksi Penjualan Mobil Toyota{% endblock %}
 
 {% block content %}
 <div class="card" style="margin-bottom: 2rem;">
     <div class="card-header">
         <div>
-            <span class="badge-tag">Kriteria 3 & 4 UTS</span>
-            <h2 class="card-title" style="font-size: 1.6rem;">📈 Evaluasi Kinerja Model Klasifikasi</h2>
+            <span class="badge-tag">Kriteria 7 Butir C & D UTS</span>
+            <h2 class="card-title" style="font-size: 1.6rem;">📈 Evaluasi Model Multilayer Perceptron (MLP)</h2>
         </div>
-        <span class="badge-tag" style="background: rgba(16, 185, 129, 0.15); color: #34d399; border-color: rgba(16, 185, 129, 0.3);">
-            Algoritma: Decision Tree (CART Gini)
+        <span class="badge-tag badge-cyan">
+            Arsitektur: 10-15-1 (Sesuai Jurnal Polinema)
         </span>
     </div>
     <p style="color: var(--text-muted);">
-        Model dilatih menggunakan algoritma <strong>Decision Tree (CART)</strong> dengan kriteria pengukur ketidakmurnian <strong>Gini Index</strong> pada 120 data latih, dan diuji pada 30 data testing yang belum pernah dilihat model sebelumnya.
+        Model dievaluasi menggunakan metrik standar regresi time series yang disyaratkan oleh Bu Abidatul Izzah, M.Kom: 
+        <strong>Mean Absolute Error (MAE)</strong> dan <strong>Mean Squared Error (MSE)</strong>, serta dilengkapi <strong>MAPE</strong> untuk mengukur derajat keakuratan peramalan terhadap 6 bulan data testing (Desember 2022 s.d. Mei 2023).
     </p>
 </div>
 
-<!-- 4 Metrik Kunci -->
+<!-- 4 Metrik Evaluasi Kunci -->
 <div class="grid-4">
     <div class="card stat-card">
-        <div class="stat-icon success">🎯</div>
-        <div class="stat-value" style="color: #34d399;">{{ metrics.decision_tree.test_accuracy }}%</div>
-        <div class="stat-label">Accuracy (Akurasi)</div>
-        <span style="font-size: 0.72rem; color: var(--text-dim); margin-top: 0.3rem;">28 dari 30 data uji benar</span>
+        <div class="stat-icon red">🎯</div>
+        <div class="stat-value" style="color: #f87171;">{{ "{:,}".format(metrics.model_evaluation.mae) }}</div>
+        <div class="stat-label">MAE (Mean Absolute Error)</div>
+        <span style="font-size: 0.75rem; color: var(--text-dim); margin-top: 0.2rem;">Rata-rata selisih unit kendaraan</span>
     </div>
 
     <div class="card stat-card">
-        <div class="stat-icon info">🔍</div>
-        <div class="stat-value" style="color: #38bdf8;">{{ metrics.decision_tree.test_precision }}%</div>
-        <div class="stat-label">Precision (Presisi)</div>
-        <span style="font-size: 0.72rem; color: var(--text-dim); margin-top: 0.3rem;">Rata-rata tertimbang (weighted)</span>
+        <div class="stat-icon cyan">📊</div>
+        <div class="stat-value" style="font-size: 1.6rem; color: #38bdf8;">
+            {{ "{:,.0f}".format(metrics.model_evaluation.mse) }}
+        </div>
+        <div class="stat-label">MSE (Mean Squared Error)</div>
+        <span style="font-size: 0.75rem; color: var(--text-dim); margin-top: 0.2rem;">Penalti deviasi kuadrat galat</span>
     </div>
 
     <div class="card stat-card">
-        <div class="stat-icon warning">📡</div>
-        <div class="stat-value" style="color: #fbbf24;">{{ metrics.decision_tree.test_recall }}%</div>
-        <div class="stat-label">Recall (Sensitivitas)</div>
-        <span style="font-size: 0.72rem; color: var(--text-dim); margin-top: 0.3rem;">Kemampuan identifikasi kelas</span>
+        <div class="stat-icon emerald">📏</div>
+        <div class="stat-value" style="color: #34d399;">{{ "{:,}".format(metrics.model_evaluation.rmse) }}</div>
+        <div class="stat-label">RMSE (Root MSE)</div>
+        <span style="font-size: 0.75rem; color: var(--text-dim); margin-top: 0.2rem;">Akar kuadrat galat (Unit)</span>
     </div>
 
     <div class="card stat-card">
-        <div class="stat-icon primary">⚖️</div>
-        <div class="stat-value" style="color: #818cf8;">{{ metrics.decision_tree.test_f1 }}%</div>
-        <div class="stat-label">F1-Score</div>
-        <span style="font-size: 0.72rem; color: var(--text-dim); margin-top: 0.3rem;">Harmoni Precision & Recall</span>
+        <div class="stat-icon blue">🌟</div>
+        <div class="stat-value" style="color: #60a5fa;">{{ metrics.model_evaluation.mape }}%</div>
+        <div class="stat-label">MAPE (Tingkat Error)</div>
+        <span style="font-size: 0.75rem; color: #34d399; margin-top: 0.2rem; font-weight: 600;">Kategori: Sangat Akurat (&lt;10%)</span>
     </div>
 </div>
 
-<!-- Confusion Matrix & Metrik Per Kelas -->
-<div class="grid-2">
-    <!-- Confusion Matrix -->
-    <div class="card">
-        <div class="card-header">
-            <h3 class="card-title">🧮 Matriks Konfusi (Confusion Matrix)</h3>
-            <span style="font-size: 0.78rem; color: var(--text-muted);">Data Testing (30 sampel)</span>
-        </div>
-        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
-            Tabel yang memetakan kecocokan antara kelas sebenarnya (*Actual*) dengan kelas tebakan model (*Predicted*).
-        </p>
-
-        <div class="cm-container">
-            <table class="cm-table">
-                <thead>
-                    <tr>
-                        <th style="background: transparent;"></th>
-                        <th colspan="3" style="background: rgba(99, 102, 241, 0.15); color: #818cf8; font-size: 0.85rem;">
-                            Prediksi Model (Predicted)
-                        </th>
-                    </tr>
-                    <tr>
-                        <th style="color: var(--text-dim); font-size: 0.75rem;">Aktual (True)</th>
-                        <th>Pred. Setosa</th>
-                        <th>Pred. Versicolor</th>
-                        <th>Pred. Virginica</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <th style="text-align: left;">Iris Setosa</th>
-                        <td class="cm-cell cm-diagonal">{{ metrics.decision_tree.confusion_matrix[0][0] }}</td>
-                        <td class="cm-cell {% if metrics.decision_tree.confusion_matrix[0][1] > 0 %}cm-error{% else %}cm-zero{% endif %}">
-                            {{ metrics.decision_tree.confusion_matrix[0][1] }}
-                        </td>
-                        <td class="cm-cell {% if metrics.decision_tree.confusion_matrix[0][2] > 0 %}cm-error{% else %}cm-zero{% endif %}">
-                            {{ metrics.decision_tree.confusion_matrix[0][2] }}
-                        </td>
-                    </tr>
-                    <tr>
-                        <th style="text-align: left;">Iris Versicolor</th>
-                        <td class="cm-cell {% if metrics.decision_tree.confusion_matrix[1][0] > 0 %}cm-error{% else %}cm-zero{% endif %}">
-                            {{ metrics.decision_tree.confusion_matrix[1][0] }}
-                        </td>
-                        <td class="cm-cell cm-diagonal">{{ metrics.decision_tree.confusion_matrix[1][1] }}</td>
-                        <td class="cm-cell {% if metrics.decision_tree.confusion_matrix[1][2] > 0 %}cm-error{% else %}cm-zero{% endif %}">
-                            {{ metrics.decision_tree.confusion_matrix[1][2] }}
-                        </td>
-                    </tr>
-                    <tr>
-                        <th style="text-align: left;">Iris Virginica</th>
-                        <td class="cm-cell {% if metrics.decision_tree.confusion_matrix[2][0] > 0 %}cm-error{% else %}cm-zero{% endif %}">
-                            {{ metrics.decision_tree.confusion_matrix[2][0] }}
-                        </td>
-                        <td class="cm-cell {% if metrics.decision_tree.confusion_matrix[2][1] > 0 %}cm-error{% else %}cm-zero{% endif %}">
-                            {{ metrics.decision_tree.confusion_matrix[2][1] }}
-                        </td>
-                        <td class="cm-cell cm-diagonal">{{ metrics.decision_tree.confusion_matrix[2][2] }}</td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <div style="font-size: 0.8rem; color: var(--text-dim); margin-top: 0.5rem; display: flex; gap: 1.5rem; justify-content: center;">
-                <span>🟩 <strong>Diagonal Hijau</strong>: Prediksi Tepat</span>
-                <span>🟥 <strong>Sel Merah</strong>: Prediksi Meleset (1 data per kelas)</span>
-            </div>
+<!-- Grafik Perbandingan Aktual vs Prediksi pada Data Uji -->
+<div class="card" style="margin-bottom: 2rem;">
+    <div class="card-header">
+        <div>
+            <h3 class="card-title">📉 Grafik Perbandingan: Data Aktual vs Prediksi Model MLP (Data Uji 6 Bulan)</h3>
+            <span style="font-size: 0.8rem; color: var(--text-muted);">
+                Garis hijau menunjukkan angka resmi GAIKINDO, garis merah putus-putus menunjukkan tebakan model MLP
+            </span>
         </div>
     </div>
+    
+    <div class="chart-container" style="height: 340px;">
+        <canvas id="actualVsPredChart"></canvas>
+    </div>
+</div>
 
-    <!-- Metrik Per Kelas -->
+<!-- Tabel Rincian Data Uji Per Bulan & Arsitektur Jaringan -->
+<div class="grid-2">
+    <!-- Tabel Rincian Data Testing -->
     <div class="card">
         <div class="card-header">
-            <h3 class="card-title">📊 Rincian Evaluasi Tiap Kelas Bunga</h3>
+            <h3 class="card-title">📋 Rincian Pengujian 6 Bulan Data Testing</h3>
         </div>
-        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
-            Perbandingan tingkat ketepatan model untuk masing-masing kelas spesies bunga:
-        </p>
-
         <div class="table-responsive">
             <table class="custom-table">
                 <thead>
                     <tr>
-                        <th>Spesies</th>
-                        <th>Precision</th>
-                        <th>Recall</th>
-                        <th>F1-Score</th>
+                        <th>Periode</th>
+                        <th>Aktual GAIKINDO</th>
+                        <th>Prediksi MLP</th>
+                        <th>Selisih Error</th>
+                        <th>Error (%)</th>
                     </tr>
                 </thead>
                 <tbody>
+                    {% for row in metrics.model_evaluation.test_results %}
                     <tr>
-                        <td><span class="badge-tag badge-setosa" style="margin: 0;">Iris Setosa</span></td>
-                        <td style="color: #34d399; font-weight: 700;">{{ metrics.decision_tree.per_class_metrics['Iris-setosa'].precision }}%</td>
-                        <td style="color: #34d399; font-weight: 700;">{{ metrics.decision_tree.per_class_metrics['Iris-setosa'].recall }}%</td>
-                        <td style="color: #34d399; font-weight: 700;">{{ metrics.decision_tree.per_class_metrics['Iris-setosa'].f1_score }}%</td>
+                        <td><strong>{{ row.periode }}</strong></td>
+                        <td style="color: #34d399; font-weight: 600;">{{ "{:,}".format(row.aktual) }}</td>
+                        <td style="color: #f87171; font-weight: 600;">{{ "{:,}".format(row.prediksi) }}</td>
+                        <td>{{ "{:,}".format(row.selisih_error) }} Unit</td>
+                        <td><span class="badge-tag badge-cyan" style="margin: 0; padding: 0.2rem 0.5rem; font-size: 0.72rem;">{{ row.persentase_error }}%</span></td>
                     </tr>
-                    <tr>
-                        <td><span class="badge-tag badge-versicolor" style="margin: 0;">Iris Versicolor</span></td>
-                        <td style="color: #818cf8; font-weight: 700;">{{ metrics.decision_tree.per_class_metrics['Iris-versicolor'].precision }}%</td>
-                        <td style="color: #818cf8; font-weight: 700;">{{ metrics.decision_tree.per_class_metrics['Iris-versicolor'].recall }}%</td>
-                        <td style="color: #818cf8; font-weight: 700;">{{ metrics.decision_tree.per_class_metrics['Iris-versicolor'].f1_score }}%</td>
-                    </tr>
-                    <tr>
-                        <td><span class="badge-tag badge-virginica" style="margin: 0;">Iris Virginica</span></td>
-                        <td style="color: #ec4899; font-weight: 700;">{{ metrics.decision_tree.per_class_metrics['Iris-virginica'].precision }}%</td>
-                        <td style="color: #ec4899; font-weight: 700;">{{ metrics.decision_tree.per_class_metrics['Iris-virginica'].recall }}%</td>
-                        <td style="color: #ec4899; font-weight: 700;">{{ metrics.decision_tree.per_class_metrics['Iris-virginica'].f1_score }}%</td>
-                    </tr>
+                    {% endfor %}
                 </tbody>
             </table>
         </div>
+    </div>
 
-        <div style="margin-top: 1.5rem; padding: 1rem; background: rgba(99, 102, 241, 0.08); border-radius: var(--radius-sm); border: 1px solid rgba(99, 102, 241, 0.2);">
-            <div style="font-weight: 600; color: #ffffff; font-size: 0.9rem; margin-bottom: 0.3rem;">
-                💡 Validasi 10-Fold Cross-Validation:
+    <!-- Informasi Arsitektur Jaringan MLP -->
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">🧠 Detail Arsitektur Jaringan Syaraf Tiruan</h3>
+        </div>
+        <ul style="padding-left: 1.2rem; color: var(--text-muted); font-size: 0.92rem; line-height: 1.9;">
+            <li>
+                <strong style="color: #ffffff;">Input Layer:</strong> 
+                10 neuron (mengambil 10 data penjualan bulanan sebelumnya $t-10, t-9, ..., t-1$).
+            </li>
+            <li>
+                <strong style="color: #ffffff;">Hidden Layer:</strong> 
+                15 neuron dengan fungsi aktivasi non-linear <strong>ReLU (Rectified Linear Unit)</strong> untuk menangkap dinamika tren pasar mobil.
+            </li>
+            <li>
+                <strong style="color: #ffffff;">Output Layer:</strong> 
+                1 neuron yang mengeluarkan nilai regresi kontinu (estimasi jumlah unit kendaraan).
+            </li>
+            <li>
+                <strong style="color: #ffffff;">Optimizer & Pembelajaran:</strong> 
+                Menggunakan algoritma optimasi <strong>Adam</strong> dengan learning rate 0.01 dan stopping criterion toleransi $10^{-4}$.
+            </li>
+        </ul>
+
+        <div style="margin-top: 1.2rem; padding: 0.9rem; background: rgba(16, 185, 129, 0.1); border-radius: var(--radius-sm); border: 1px solid rgba(16, 185, 129, 0.25);">
+            <div style="font-weight: 700; color: #34d399; font-size: 0.88rem;">
+                ✅ Kesimpulan Kinerja Model:
             </div>
-            <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0;">
-                Rata-rata akurasi: <strong>{{ metrics.decision_tree.cv_10fold_mean }}%</strong> (Standar Deviasi ± {{ metrics.decision_tree.cv_10fold_std }}%). Membuktikan stabilitas model yang tinggi di seluruh variasi lipatan data.
+            <p style="font-size: 0.84rem; color: var(--text-muted); margin: 0; margin-top: 0.2rem;">
+                Dengan nilai MAPE sebesar <strong>{{ metrics.model_evaluation.mape }}%</strong> (di bawah standar ambang batas 10%), kemampuan model MLP tergolong dalam kategori <em>High Accuracy Forecasting</em> (Sangat Akurat) dalam memprediksi tren penjualan otomotif.
             </p>
         </div>
     </div>
 </div>
+{% endblock %}
 
-<!-- Aturan Pohon Keputusan (Tree Rules) -->
-<div class="card" style="margin-top: 1rem;">
-    <div class="card-header">
-        <h3 class="card-title">🌳 Logika Aturan Pohon Keputusan (Tree Rules)</h3>
-        <span style="font-size: 0.78rem; color: var(--text-muted);">Hasil Ekstraksi Model CART</span>
-    </div>
-    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
-        Berikut adalah struktur aturan cabang <em>if-else</em> internal yang dibentuk otomatis oleh Decision Tree untuk membedakan ketiga jenis bunga:
-    </p>
-    <div class="code-box">
-{{ metrics.decision_tree.tree_rules }}
-    </div>
-</div>
-
-<!-- Perbandingan Alternatif: Multilayer Perceptron (MLP) -->
-<div class="card" style="margin-top: 2rem; border-color: rgba(168, 85, 247, 0.3);">
-    <div class="card-header">
-        <h3 class="card-title">⚡ Perbandingan Tambahan: Model Multilayer Perceptron (MLP)</h3>
-        <span class="badge-tag" style="background: rgba(168, 85, 247, 0.15); color: #c084fc; border-color: rgba(168, 85, 247, 0.3);">
-            Neural Network
-        </span>
-    </div>
-    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.2rem;">
-        Sesuai opsi di soal UTS dosen (<em>Decision Tree atau Multilayer Perceptron</em>), kami juga melatih model <strong>Multilayer Perceptron (MLP)</strong> dengan arsitektur 4 neuron input &rarr; Hidden 1 (16 neuron) &rarr; Hidden 2 (8 neuron) &rarr; 3 neuron output:
-    </p>
-
-    <div class="grid-4" style="margin-bottom: 0;">
-        <div style="padding: 1rem; background: rgba(255, 255, 255, 0.02); border-radius: var(--radius-sm);">
-            <div style="font-size: 0.75rem; color: var(--text-dim);">MLP Accuracy</div>
-            <div style="font-size: 1.5rem; font-weight: 700; color: #34d399;">{{ metrics.mlp.test_accuracy }}%</div>
-        </div>
-        <div style="padding: 1rem; background: rgba(255, 255, 255, 0.02); border-radius: var(--radius-sm);">
-            <div style="font-size: 0.75rem; color: var(--text-dim);">MLP Precision</div>
-            <div style="font-size: 1.5rem; font-weight: 700; color: #38bdf8;">{{ metrics.mlp.test_precision }}%</div>
-        </div>
-        <div style="padding: 1rem; background: rgba(255, 255, 255, 0.02); border-radius: var(--radius-sm);">
-            <div style="font-size: 0.75rem; color: var(--text-dim);">MLP Recall</div>
-            <div style="font-size: 1.5rem; font-weight: 700; color: #fbbf24;">{{ metrics.mlp.test_recall }}%</div>
-        </div>
-        <div style="padding: 1rem; background: rgba(255, 255, 255, 0.02); border-radius: var(--radius-sm);">
-            <div style="font-size: 0.75rem; color: var(--text-dim);">MLP F1-Score</div>
-            <div style="font-size: 1.5rem; font-weight: 700; color: #818cf8;">{{ metrics.mlp.test_f1 }}%</div>
-        </div>
-    </div>
-</div>
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const labels = {{ test_labels | tojson }};
+        const actualData = {{ actual_vals | tojson }};
+        const predData = {{ pred_vals | tojson }};
+        if (window.renderActualVsPredChart) {
+            window.renderActualVsPredChart('actualVsPredChart', labels, actualData, predData);
+        }
+    });
+</script>
 {% endblock %}

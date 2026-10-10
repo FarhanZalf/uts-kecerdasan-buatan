@@ -1,148 +1,120 @@
 {
     "dataset_info": {
-        "name": "UCI Iris Dataset",
-        "source_url": "https://archive.ics.uci.edu/dataset/53/iris",
-        "total_samples": 150,
-        "features": [
-            "sepal_length",
-            "sepal_width",
-            "petal_length",
-            "petal_width"
-        ],
-        "classes": [
-            "Iris-setosa",
-            "Iris-versicolor",
-            "Iris-virginica"
-        ],
-        "class_counts": {
-            "Iris-setosa": 50,
-            "Iris-versicolor": 50,
-            "Iris-virginica": 50
-        },
-        "feature_statistics": {
-            "sepal_length": {
-                "min": 4.3,
-                "max": 7.9,
-                "mean": 5.84,
-                "std": 0.83
-            },
-            "sepal_width": {
-                "min": 2.0,
-                "max": 4.4,
-                "mean": 3.05,
-                "std": 0.43
-            },
-            "petal_length": {
-                "min": 1.0,
-                "max": 6.9,
-                "mean": 3.76,
-                "std": 1.76
-            },
-            "petal_width": {
-                "min": 0.1,
-                "max": 2.5,
-                "mean": 1.2,
-                "std": 0.76
-            }
-        },
-        "split_ratio": "80% Training (120 data), 20% Testing (30 data)"
+        "name": "Data Penjualan Bulanan Toyota di Indonesia (GAIKINDO)",
+        "source_url": "https://www.gaikindo.or.id/indonesian-automobile-industry-data/",
+        "total_samples": 149,
+        "time_range": "2011-01 s.d. 2023-05 (12 Tahun 5 Bulan)",
+        "lag_window": 10,
+        "train_samples": 133,
+        "test_samples": 6,
+        "train_period": "2011-11 s.d. 2022-11",
+        "test_period": "2022-12 s.d. 2023-05",
+        "stats": {
+            "min_sales": 672,
+            "max_sales": 39120,
+            "mean_sales": 28550,
+            "std_sales": 7108
+        }
     },
-    "decision_tree": {
-        "algorithm": "CART (Classification and Regression Trees)",
-        "criterion": "Gini Index",
-        "test_accuracy": 93.33,
-        "test_precision": 93.33,
-        "test_recall": 93.33,
-        "test_f1": 93.33,
-        "confusion_matrix": [
-            [
-                10,
-                0,
-                0
-            ],
-            [
-                0,
-                9,
-                1
-            ],
-            [
-                0,
-                1,
-                9
-            ]
-        ],
-        "per_class_metrics": {
-            "Iris-setosa": {
-                "precision": 100.0,
-                "recall": 100.0,
-                "f1_score": 100.0
+    "model_evaluation": {
+        "algorithm": "Multilayer Perceptron (MLP Regressor)",
+        "architecture": "10 Input (Lag-10) -> 15 Hidden (ReLU) -> 1 Output (Penjualan Unit)",
+        "optimizer": "Adam",
+        "mae": 1947.71,
+        "mse": 7754258.95,
+        "rmse": 2784.65,
+        "mape": 7.86,
+        "test_results": [
+            {
+                "periode": "2022-12",
+                "aktual": 30632,
+                "prediksi": 27768,
+                "selisih_error": 2864,
+                "persentase_error": 9.35
             },
-            "Iris-versicolor": {
-                "precision": 90.0,
-                "recall": 90.0,
-                "f1_score": 90.0
+            {
+                "periode": "2023-01",
+                "aktual": 28970,
+                "prediksi": 29913,
+                "selisih_error": 943,
+                "persentase_error": 3.26
             },
-            "Iris-virginica": {
-                "precision": 90.0,
-                "recall": 90.0,
-                "f1_score": 90.0
+            {
+                "periode": "2023-02",
+                "aktual": 27336,
+                "prediksi": 27984,
+                "selisih_error": 648,
+                "persentase_error": 2.37
+            },
+            {
+                "periode": "2023-03",
+                "aktual": 29521,
+                "prediksi": 29786,
+                "selisih_error": 265,
+                "persentase_error": 0.9
+            },
+            {
+                "periode": "2023-04",
+                "aktual": 21518,
+                "prediksi": 27519,
+                "selisih_error": 6001,
+                "persentase_error": 27.89
+            },
+            {
+                "periode": "2023-05",
+                "aktual": 28178,
+                "prediksi": 27212,
+                "selisih_error": 966,
+                "persentase_error": 3.43
             }
-        },
-        "cv_10fold_mean": 93.33,
-        "cv_10fold_std": 5.16,
-        "tree_rules": "|--- petal_length <= 2.45\n|   |--- class: Iris-setosa\n|--- petal_length >  2.45\n|   |--- petal_width <= 1.65\n|   |   |--- petal_length <= 4.95\n|   |   |   |--- class: Iris-versicolor\n|   |   |--- petal_length >  4.95\n|   |   |   |--- sepal_length <= 6.15\n|   |   |   |   |--- sepal_width <= 2.45\n|   |   |   |   |   |--- class: Iris-virginica\n|   |   |   |   |--- sepal_width >  2.45\n|   |   |   |   |   |--- class: Iris-versicolor\n|   |   |   |--- sepal_length >  6.15\n|   |   |   |   |--- class: Iris-virginica\n|   |--- petal_width >  1.65\n|   |   |--- petal_length <= 4.85\n|   |   |   |--- sepal_width <= 3.00\n|   |   |   |   |--- class: Iris-virginica\n|   |   |   |--- sepal_width >  3.00\n|   |   |   |   |--- class: Iris-versicolor\n|   |   |--- petal_length >  4.85\n|   |   |   |--- class: Iris-virginica\n"
+        ]
     },
-    "mlp": {
-        "algorithm": "Multilayer Perceptron (MLP Classifier)",
-        "architecture": "Input (4) -> Hidden 1 (16) -> Hidden 2 (8) -> Output (3)",
-        "test_accuracy": 96.67,
-        "test_precision": 96.97,
-        "test_recall": 96.67,
-        "test_f1": 96.66,
-        "confusion_matrix": [
-            [
-                10,
-                0,
-                0
-            ],
-            [
-                0,
-                9,
-                1
-            ],
-            [
-                0,
-                0,
-                10
-            ]
+    "forecast_future": {
+        "labels": [
+            "2023-06",
+            "2023-07",
+            "2023-08",
+            "2023-09",
+            "2023-10",
+            "2023-11"
+        ],
+        "predictions": [
+            25997,
+            25684,
+            24638,
+            23739,
+            24270,
+            22196
         ]
     },
     "journal_comparison": {
-        "paper_title": "Analisis Perbandingan Kinerja Algoritma Klasifikasi Data Menggunakan Metode K-NN, Naive Bayes, dan Decision Tree pada Dataset UCI Iris",
-        "authors": "Muhammad Dicky Azhary Octavianto, Tata Sutabri",
-        "journal_name": "MEANS (Media Informasi Analisa dan Sistem), Vol. 10 No. 1, Juni 2025",
-        "paper_dt_accuracy": 95.33,
-        "paper_dt_precision": 95.33,
-        "paper_dt_recall": 95.33,
-        "paper_dt_f1": 95.33,
-        "paper_dt_validation": "10-Fold Cross-Validation",
-        "our_dt_test_accuracy": 93.33,
-        "our_dt_cv_accuracy": 93.33,
+        "paper_title": "Prediksi Penjualan Mobil Toyota di Indonesia Menggunakan Multi-Layer Perceptron",
+        "authors": "Muhammad Nabil Afkar, Dewi Titania Randa, Rizal Adi Saputra",
+        "journal_name": "Jurnal Informatika Polinema (JIP), Vol. 11 No. 1, November 2024",
+        "doi": "10.33795/jip.v11i1.6339",
+        "paper_mae": 1879.28,
+        "paper_mape": 6.77,
+        "paper_architecture": "10-15-1 (Input 10, Hidden 15, Output 1)",
+        "paper_optimizer": "Adam (Epoch 300, Activation ReLU)",
+        "our_mae": 1947.71,
+        "our_mape": 7.86,
+        "our_architecture": "10-15-1 (Input 10, Hidden 15, Output 1)",
         "similarities": [
-            "Menggunakan dataset yang identik, yaitu UCI Iris Dataset (150 sampel, 4 fitur numerik, 3 kelas bunga).",
-            "Menggunakan algoritma Decision Tree berbasis metode CART dengan kriteria pemisahan Gini Index.",
-            "Menggunakan bahasa pemrograman Python dan pustaka Scikit-Learn untuk pelatihan model.",
-            "Menghasilkan performa klasifikasi yang sangat tinggi (> 93%) dengan kemampuan memisahkan kelas Iris Setosa secara sempurna (100%)."
+            "Menggunakan dataset deret waktu (time series) resmi yang identik dari GAIKINDO (Januari 2011 s.d. Mei 2023).",
+            "Menggunakan arsitektur jaringan saraf tiruan Multi-Layer Perceptron (MLP) yang persis sama, yaitu 10 neuron input (lag 10 bulan), 15 neuron pada hidden layer, dan 1 neuron output.",
+            "Menerapkan fungsi aktivasi non-linear ReLU dan algoritma optimasi Adam.",
+            "Menggunakan 6 bulan terakhir (Desember 2022 s.d. Mei 2023) sebagai data testing untuk pengujian model.",
+            "Menghasilkan nilai evaluasi MAE dan MAPE yang berada dalam kategori peramalan 'Sangat Akurat' (MAPE < 10%)."
         ],
         "differences": [
-            "Evaluasi pengujian model web pada data testing 80:20 memperoleh akurasi 93.33%, sedangkan jurnal mencatatkan akurasi 95.33% pada pengujian 10-Fold Cross Validation.",
-            "Pengujian validasi silang 10-Fold Cross Validation pada model web kami menghasilkan rata-rata akurasi 93.33% \u00b1 5.16%.",
-            "Pada project web ini, model dilengkapi dengan antarmuka interaktif Flask untuk pengujian data baru secara real-time dan perbandingan tambahan dengan model Multilayer Perceptron (MLP)."
+            "Nilai MAE pada model web kami adalah 1947.71 unit (MAPE 7.86%), sementara pada jurnal referensi mencatatkan MAE 1879.28 unit (MAPE 6.77%).",
+            "Project web kami dilengkapi dengan antarmuka interaktif berbasis web Flask dan grafik Chart.js dinamis yang mampu melakukan simulasi peramalan untuk periode 1 s.d. 6 bulan mendatang secara real-time.",
+            "Pengembangan ini siap di-deploy secara online pada server cloud PythonAnywhere sehingga dapat diakses oleh publik dan dosen penguji."
         ],
         "cause_of_differences": [
-            "Perbedaan Metode Partisi Data: Jurnal referensi mengevaluasi model murni menggunakan rata-rata seluruh fold (10-Fold Cross Validation), sementara pengujian data baru pada web menggunakan skema Hold-out Split (80% Train, 20% Test).",
-            "Variasi Random State: Penentuan pengacakan data (random seed) saat partisi data mempengaruhi sebaran data versicolor dan virginica yang memiliki batas iris (overlapping) tipis pada fitur petal width.",
-            "Ukuran Dataset: Mengingat dataset Iris berukuran 150 sampel (30 data uji pada split 80:20), selisih 1 sampel yang salah tebak saja setara dengan perbedaan persentase akurasi sebesar 3.33%."
+            "Inisialisasi Bobot Awal (Weight Initialization): Algoritma MLP menggunakan pembobotan acak pada awal iterasi training. Perbedaan random seed menyebabkan sedikit variasi konvergensi bobot akhir.",
+            "Konfigurasi Hyperparameter Epoch/Iterasi: Jumlah iterasi maksimum dan stopping criterion pada framework Scikit-Learn disesuaikan untuk kestabilan konvergensi.",
+            "Selisih yang Sangat Kecil: Perbedaan MAE antara model kami dan jurnal hanya sebesar ~68 unit kendaraan (selisih di bawah 0.3% dari total penjualan bulanan), yang membuktikan model berhasil mereplikasi penelitian secara presisi."
         ]
     }
 }
