@@ -1,0 +1,168 @@
+{% extends 'base.html' %}
+
+{% block title %}Eksplorasi Dataset | Klasifikasi Bunga Iris{% endblock %}
+
+{% block content %}
+<div class="card" style="margin-bottom: 2rem;">
+    <div class="card-header">
+        <div>
+            <span class="badge-tag">Kriteria 1 UTS</span>
+            <h2 class="card-title" style="font-size: 1.6rem;">📚 Sumber & Karakteristik Dataset</h2>
+        </div>
+        <a href="{{ url_for('download_dataset') }}" class="btn btn-secondary" style="font-size: 0.85rem; padding: 0.5rem 1rem;">
+            📥 Unduh File iris.csv
+        </a>
+    </div>
+    
+    <p style="color: var(--text-muted); margin-bottom: 1.5rem;">
+        Dataset yang digunakan dalam penelitian ini adalah <strong>Iris Dataset</strong> yang diperoleh dari repositori resmi 
+        <a href="https://archive.ics.uci.edu/dataset/53/iris" target="_blank" style="color: var(--primary-light); text-decoration: underline;">
+            UCI Machine Learning Repository
+        </a>. Dataset ini diperkenalkan oleh biolog dan statistikawan Ronald A. Fisher pada tahun 1936 dan menjadi salah satu dataset benchmark paling terkenal dalam dunia machine learning.
+    </p>
+
+    <div class="grid-3" style="margin-bottom: 1rem;">
+        <div class="card" style="background: rgba(255, 255, 255, 0.02);">
+            <div style="font-size: 0.8rem; color: var(--text-dim); text-transform: uppercase;">Jumlah Baris / Sampel</div>
+            <div style="font-size: 1.8rem; font-weight: 700; color: #ffffff; margin-top: 0.3rem;">150 Data</div>
+            <div style="font-size: 0.82rem; color: var(--text-muted);">50 per kelas (Sangat Seimbang)</div>
+        </div>
+        <div class="card" style="background: rgba(255, 255, 255, 0.02);">
+            <div style="font-size: 0.8rem; color: var(--text-dim); text-transform: uppercase;">Jumlah Fitur Input</div>
+            <div style="font-size: 1.8rem; font-weight: 700; color: #38bdf8; margin-top: 0.3rem;">4 Numerik</div>
+            <div style="font-size: 0.82rem; color: var(--text-muted);">Satuan pengukuran sentimeter (cm)</div>
+        </div>
+        <div class="card" style="background: rgba(255, 255, 255, 0.02);">
+            <div style="font-size: 0.8rem; color: var(--text-dim); text-transform: uppercase;">Kondisi Missing Value</div>
+            <div style="font-size: 1.8rem; font-weight: 700; color: #34d399; margin-top: 0.3rem;">0 (Bersih)</div>
+            <div style="font-size: 0.82rem; color: var(--text-muted);">Tidak ada data kosong / null</div>
+        </div>
+    </div>
+</div>
+
+<!-- Statistik Fitur & Preprocessing -->
+<div class="grid-2">
+    <!-- Statistik Deskriptif Fitur -->
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">📐 Statistik Deskriptif 4 Fitur</h3>
+        </div>
+        <div class="table-responsive">
+            <table class="custom-table">
+                <thead>
+                    <tr>
+                        <th>Nama Atribut Fitur</th>
+                        <th>Min (cm)</th>
+                        <th>Max (cm)</th>
+                        <th>Mean (cm)</th>
+                        <th>Std Dev</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Sepal Length</strong> (Panjang Kelopak)</td>
+                        <td>{{ metrics.dataset_info.feature_statistics.sepal_length.min }}</td>
+                        <td>{{ metrics.dataset_info.feature_statistics.sepal_length.max }}</td>
+                        <td>{{ metrics.dataset_info.feature_statistics.sepal_length.mean }}</td>
+                        <td>{{ metrics.dataset_info.feature_statistics.sepal_length.std }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Sepal Width</strong> (Lebar Kelopak)</td>
+                        <td>{{ metrics.dataset_info.feature_statistics.sepal_width.min }}</td>
+                        <td>{{ metrics.dataset_info.feature_statistics.sepal_width.max }}</td>
+                        <td>{{ metrics.dataset_info.feature_statistics.sepal_width.mean }}</td>
+                        <td>{{ metrics.dataset_info.feature_statistics.sepal_width.std }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Petal Length</strong> (Panjang Mahkota)</td>
+                        <td>{{ metrics.dataset_info.feature_statistics.petal_length.min }}</td>
+                        <td>{{ metrics.dataset_info.feature_statistics.petal_length.max }}</td>
+                        <td>{{ metrics.dataset_info.feature_statistics.petal_length.mean }}</td>
+                        <td>{{ metrics.dataset_info.feature_statistics.petal_length.std }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Petal Width</strong> (Lebar Mahkota)</td>
+                        <td>{{ metrics.dataset_info.feature_statistics.petal_width.min }}</td>
+                        <td>{{ metrics.dataset_info.feature_statistics.petal_width.max }}</td>
+                        <td>{{ metrics.dataset_info.feature_statistics.petal_width.mean }}</td>
+                        <td>{{ metrics.dataset_info.feature_statistics.petal_width.std }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Preprocessing & Data Split -->
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">⚙️ Preprocessing & Pembagian Data (Split)</h3>
+        </div>
+        <ul style="padding-left: 1.2rem; color: var(--text-muted); font-size: 0.92rem; line-height: 1.8;">
+            <li>
+                <strong style="color: #ffffff;">1. Pembersihan Data (Data Cleaning):</strong> 
+                Dataset asli diverifikasi bebas dari baris kosong (blank lines) dan spasi berlebih pada label kelas.
+            </li>
+            <li>
+                <strong style="color: #ffffff;">2. Pembagian Train-Test Split (80% : 20%):</strong>
+                Data dibagi menjadi <strong>120 sampel data training</strong> untuk pembentukan model pohon keputusan dan <strong>30 sampel data testing</strong> untuk pengujian evaluasi.
+            </li>
+            <li>
+                <strong style="color: #ffffff;">3. Stratified Sampling:</strong>
+                Pembagian data menggunakan parameter <code>stratify=y</code> sehingga komposisi kelas pada data testing tetap seimbang (10 Setosa, 10 Versicolor, 10 Virginica).
+            </li>
+            <li>
+                <strong style="color: #ffffff;">4. Validasi Silang (10-Fold Cross-Validation):</strong>
+                Sebagai pembanding dengan artikel jurnal referensi, kami juga menerapkan 10-Fold Cross-Validation untuk menjamin model tidak mengalami <em>overfitting</em>.
+            </li>
+        </ul>
+    </div>
+</div>
+
+<!-- Tabel Dataset Lengkap -->
+<div class="card">
+    <div class="card-header">
+        <div>
+            <h3 class="card-title">📄 Data Mentah Dataset UCI Iris (150 Baris)</h3>
+            <span style="font-size: 0.8rem; color: var(--text-dim);">Gunakan kolom pencarian untuk menyaring data</span>
+        </div>
+        <div style="width: 260px;">
+            <input type="text" id="tableSearchInput" class="form-control" placeholder="🔍 Cari data atau spesies..." style="padding: 0.5rem 0.8rem; font-size: 0.85rem;">
+        </div>
+    </div>
+
+    <div class="table-responsive" style="max-height: 480px; overflow-y: auto;">
+        <table class="custom-table" id="datasetTable">
+            <thead>
+                <tr style="position: sticky; top: 0; z-index: 10; background: #111827;">
+                    <th>No</th>
+                    <th>Sepal Length (cm)</th>
+                    <th>Sepal Width (cm)</th>
+                    <th>Petal Length (cm)</th>
+                    <th>Petal Width (cm)</th>
+                    <th>Spesies Target</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in data %}
+                <tr>
+                    <td style="color: var(--text-dim);">{{ loop.index }}</td>
+                    <td>{{ row.sepal_length }}</td>
+                    <td>{{ row.sepal_width }}</td>
+                    <td>{{ row.petal_length }}</td>
+                    <td>{{ row.petal_width }}</td>
+                    <td>
+                        {% if row.species == 'Iris-setosa' %}
+                            <span class="badge-tag badge-setosa" style="margin: 0; font-size: 0.72rem;">Setosa</span>
+                        {% elif row.species == 'Iris-versicolor' %}
+                            <span class="badge-tag badge-versicolor" style="margin: 0; font-size: 0.72rem;">Versicolor</span>
+                        {% else %}
+                            <span class="badge-tag badge-virginica" style="margin: 0; font-size: 0.72rem;">Virginica</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

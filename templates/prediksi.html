@@ -1,0 +1,158 @@
+{% extends 'base.html' %}
+
+{% block title %}Pengujian Data Baru | Klasifikasi Bunga Iris{% endblock %}
+
+{% block content %}
+<div class="card" style="margin-bottom: 2rem;">
+    <div class="card-header">
+        <div>
+            <span class="badge-tag">Kriteria 5 UTS</span>
+            <h2 class="card-title" style="font-size: 1.6rem;">🎯 Pengujian Terhadap Data Baru (Live Classification)</h2>
+        </div>
+        <span class="badge-tag" style="background: rgba(99, 102, 241, 0.15); color: #818cf8;">
+            Interaktif & Real-Time
+        </span>
+    </div>
+    <p style="color: var(--text-muted);">
+        Masukkan parameter ukuran kelopak (<em>Sepal</em>) dan mahkota (<em>Petal</em>) dari sampel bunga baru yang ingin diuji. Sistem akan memproses data tersebut menggunakan model machine learning terlatih dan menampilkan hasil klasifikasi beserta probabilitasnya secara langsung.
+    </p>
+
+    <!-- Quick Presets -->
+    <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 0.8rem; margin-top: 1.2rem; padding-top: 1.2rem; border-top: 1px solid var(--border-color);">
+        <span style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600;">⚡ Contoh Pengujian Cepat:</span>
+        <button type="button" class="btn-preset" onclick="applyPreset('setosa')">🌸 Isi Contoh Setosa</button>
+        <button type="button" class="btn-preset" onclick="applyPreset('versicolor')">🌼 Isi Contoh Versicolor</button>
+        <button type="button" class="btn-preset" onclick="applyPreset('virginica')">🌺 Isi Contoh Virginica</button>
+    </div>
+</div>
+
+<div class="grid-2">
+    <!-- Form Input Data Baru -->
+    <div class="card">
+        <form method="POST" action="{{ url_for('prediksi_page') }}">
+            <div class="card-header">
+                <h3 class="card-title">📝 Form Parameter Ukuran Bunga</h3>
+            </div>
+
+            <!-- Pilihan Algoritma -->
+            <div class="form-group">
+                <label class="form-label">Pilih Algoritma Klasifikasi</label>
+                <select name="algorithm" class="form-control" style="background: #1a2338;">
+                    <option value="dt" {% if input_data.algorithm == 'dt' %}selected{% endif %}>
+                        🌲 Decision Tree (CART Gini) — Utama & Jurnal Acuan
+                    </option>
+                    <option value="mlp" {% if input_data.algorithm == 'mlp' %}selected{% endif %}>
+                        🧠 Multilayer Perceptron (MLP) — Neural Network
+                    </option>
+                </select>
+            </div>
+
+            <!-- Sepal Length -->
+            <div class="form-group">
+                <label class="form-label">
+                    Sepal Length <span>(Panjang Kelopak dalam cm)</span>
+                </label>
+                <div class="slider-container">
+                    <input type="range" class="slider-input" id="slider_sepal_length" min="4.0" max="8.0" step="0.1" value="{{ input_data.sepal_length }}">
+                    <input type="number" step="0.1" class="form-control" name="sepal_length" id="input_sepal_length" value="{{ input_data.sepal_length }}" style="width: 100px; text-align: center;" required>
+                </div>
+            </div>
+
+            <!-- Sepal Width -->
+            <div class="form-group">
+                <label class="form-label">
+                    Sepal Width <span>(Lebar Kelopak dalam cm)</span>
+                </label>
+                <div class="slider-container">
+                    <input type="range" class="slider-input" id="slider_sepal_width" min="2.0" max="4.5" step="0.1" value="{{ input_data.sepal_width }}">
+                    <input type="number" step="0.1" class="form-control" name="sepal_width" id="input_sepal_width" value="{{ input_data.sepal_width }}" style="width: 100px; text-align: center;" required>
+                </div>
+            </div>
+
+            <!-- Petal Length -->
+            <div class="form-group">
+                <label class="form-label">
+                    Petal Length <span>(Panjang Mahkota dalam cm)</span>
+                </label>
+                <div class="slider-container">
+                    <input type="range" class="slider-input" id="slider_petal_length" min="1.0" max="7.0" step="0.1" value="{{ input_data.petal_length }}">
+                    <input type="number" step="0.1" class="form-control" name="petal_length" id="input_petal_length" value="{{ input_data.petal_length }}" style="width: 100px; text-align: center;" required>
+                </div>
+            </div>
+
+            <!-- Petal Width -->
+            <div class="form-group">
+                <label class="form-label">
+                    Petal Width <span>(Lebar Mahkota dalam cm)</span>
+                </label>
+                <div class="slider-container">
+                    <input type="range" class="slider-input" id="slider_petal_width" min="0.1" max="2.6" step="0.1" value="{{ input_data.petal_width }}">
+                    <input type="number" step="0.1" class="form-control" name="petal_width" id="input_petal_width" value="{{ input_data.petal_width }}" style="width: 100px; text-align: center;" required>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">
+                🔍 Klasifikasikan Data Baru
+            </button>
+        </form>
+    </div>
+
+    <!-- Hasil Prediksi -->
+    <div>
+        {% if result %}
+            <div class="result-card">
+                <div class="result-header">
+                    <div class="result-image-box">
+                        <img src="{{ url_for('static', filename='img/' + result.info.image) }}" alt="{{ result.info.name }}">
+                    </div>
+                    <div class="result-info">
+                        <span class="badge-tag {{ result.info.badge_class }}" style="margin-bottom: 0.4rem;">
+                            Hasil Prediksi Terkonfirmasi
+                        </span>
+                        <h3 class="result-title">{{ result.info.name }}</h3>
+                        <div class="result-meta">
+                            Model: <strong>{{ result.algorithm_used }}</strong> • Keyakinan: <strong style="color: #34d399;">{{ result.confidence }}%</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="padding: 1rem; background: rgba(0, 0, 0, 0.25); border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
+                    <div style="font-size: 0.8rem; text-transform: uppercase; color: var(--text-dim); margin-bottom: 0.3rem;">Karakteristik Spesies:</div>
+                    <p style="font-size: 0.88rem; color: var(--text-main); margin: 0;">
+                        {{ result.info.desc }}
+                    </p>
+                </div>
+
+                <!-- Distribusi Probabilitas 3 Kelas -->
+                <div>
+                    <h4 style="font-size: 0.9rem; color: #ffffff; margin-bottom: 0.8rem;">
+                        📊 Distribusi Probabilitas Prediksi:
+                    </h4>
+                    {% for p in result.probabilities %}
+                    <div class="prob-item">
+                        <div class="prob-header">
+                            <span>{{ p.label }}</span>
+                            <span style="font-weight: 700; color: #ffffff;">{{ p.score }}%</span>
+                        </div>
+                        <div class="prob-bar-wrapper">
+                            <div class="prob-bar-fill {% if p.class_name == 'Iris-setosa' %}prob-bar-setosa{% elif p.class_name == 'Iris-versicolor' %}prob-bar-versicolor{% else %}prob-bar-virginica{% endif %}"
+                                 style="width: {{ p.score }}%;"></div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% else %}
+            <div class="card" style="height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 3rem 2rem;">
+                <div style="font-size: 3.5rem; margin-bottom: 1rem;">🌸</div>
+                <h3 style="font-family: var(--font-heading); font-size: 1.3rem; margin-bottom: 0.6rem; color: #ffffff;">
+                    Siap Menguji Sampel Bunga Baru
+                </h3>
+                <p style="color: var(--text-muted); font-size: 0.9rem; max-width: 360px;">
+                    Atur nilai ukuran kelopak dan mahkota di sebelah kiri, atau gunakan tombol <em>Contoh Pengujian Cepat</em>, lalu klik tombol <strong>Klasifikasikan Data Baru</strong>.
+                </p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

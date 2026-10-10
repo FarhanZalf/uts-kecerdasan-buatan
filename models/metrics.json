@@ -1,0 +1,148 @@
+{
+    "dataset_info": {
+        "name": "UCI Iris Dataset",
+        "source_url": "https://archive.ics.uci.edu/dataset/53/iris",
+        "total_samples": 150,
+        "features": [
+            "sepal_length",
+            "sepal_width",
+            "petal_length",
+            "petal_width"
+        ],
+        "classes": [
+            "Iris-setosa",
+            "Iris-versicolor",
+            "Iris-virginica"
+        ],
+        "class_counts": {
+            "Iris-setosa": 50,
+            "Iris-versicolor": 50,
+            "Iris-virginica": 50
+        },
+        "feature_statistics": {
+            "sepal_length": {
+                "min": 4.3,
+                "max": 7.9,
+                "mean": 5.84,
+                "std": 0.83
+            },
+            "sepal_width": {
+                "min": 2.0,
+                "max": 4.4,
+                "mean": 3.05,
+                "std": 0.43
+            },
+            "petal_length": {
+                "min": 1.0,
+                "max": 6.9,
+                "mean": 3.76,
+                "std": 1.76
+            },
+            "petal_width": {
+                "min": 0.1,
+                "max": 2.5,
+                "mean": 1.2,
+                "std": 0.76
+            }
+        },
+        "split_ratio": "80% Training (120 data), 20% Testing (30 data)"
+    },
+    "decision_tree": {
+        "algorithm": "CART (Classification and Regression Trees)",
+        "criterion": "Gini Index",
+        "test_accuracy": 93.33,
+        "test_precision": 93.33,
+        "test_recall": 93.33,
+        "test_f1": 93.33,
+        "confusion_matrix": [
+            [
+                10,
+                0,
+                0
+            ],
+            [
+                0,
+                9,
+                1
+            ],
+            [
+                0,
+                1,
+                9
+            ]
+        ],
+        "per_class_metrics": {
+            "Iris-setosa": {
+                "precision": 100.0,
+                "recall": 100.0,
+                "f1_score": 100.0
+            },
+            "Iris-versicolor": {
+                "precision": 90.0,
+                "recall": 90.0,
+                "f1_score": 90.0
+            },
+            "Iris-virginica": {
+                "precision": 90.0,
+                "recall": 90.0,
+                "f1_score": 90.0
+            }
+        },
+        "cv_10fold_mean": 93.33,
+        "cv_10fold_std": 5.16,
+        "tree_rules": "|--- petal_length <= 2.45\n|   |--- class: Iris-setosa\n|--- petal_length >  2.45\n|   |--- petal_width <= 1.65\n|   |   |--- petal_length <= 4.95\n|   |   |   |--- class: Iris-versicolor\n|   |   |--- petal_length >  4.95\n|   |   |   |--- sepal_length <= 6.15\n|   |   |   |   |--- sepal_width <= 2.45\n|   |   |   |   |   |--- class: Iris-virginica\n|   |   |   |   |--- sepal_width >  2.45\n|   |   |   |   |   |--- class: Iris-versicolor\n|   |   |   |--- sepal_length >  6.15\n|   |   |   |   |--- class: Iris-virginica\n|   |--- petal_width >  1.65\n|   |   |--- petal_length <= 4.85\n|   |   |   |--- sepal_width <= 3.00\n|   |   |   |   |--- class: Iris-virginica\n|   |   |   |--- sepal_width >  3.00\n|   |   |   |   |--- class: Iris-versicolor\n|   |   |--- petal_length >  4.85\n|   |   |   |--- class: Iris-virginica\n"
+    },
+    "mlp": {
+        "algorithm": "Multilayer Perceptron (MLP Classifier)",
+        "architecture": "Input (4) -> Hidden 1 (16) -> Hidden 2 (8) -> Output (3)",
+        "test_accuracy": 96.67,
+        "test_precision": 96.97,
+        "test_recall": 96.67,
+        "test_f1": 96.66,
+        "confusion_matrix": [
+            [
+                10,
+                0,
+                0
+            ],
+            [
+                0,
+                9,
+                1
+            ],
+            [
+                0,
+                0,
+                10
+            ]
+        ]
+    },
+    "journal_comparison": {
+        "paper_title": "Analisis Perbandingan Kinerja Algoritma Klasifikasi Data Menggunakan Metode K-NN, Naive Bayes, dan Decision Tree pada Dataset UCI Iris",
+        "authors": "Muhammad Dicky Azhary Octavianto, Tata Sutabri",
+        "journal_name": "MEANS (Media Informasi Analisa dan Sistem), Vol. 10 No. 1, Juni 2025",
+        "paper_dt_accuracy": 95.33,
+        "paper_dt_precision": 95.33,
+        "paper_dt_recall": 95.33,
+        "paper_dt_f1": 95.33,
+        "paper_dt_validation": "10-Fold Cross-Validation",
+        "our_dt_test_accuracy": 93.33,
+        "our_dt_cv_accuracy": 93.33,
+        "similarities": [
+            "Menggunakan dataset yang identik, yaitu UCI Iris Dataset (150 sampel, 4 fitur numerik, 3 kelas bunga).",
+            "Menggunakan algoritma Decision Tree berbasis metode CART dengan kriteria pemisahan Gini Index.",
+            "Menggunakan bahasa pemrograman Python dan pustaka Scikit-Learn untuk pelatihan model.",
+            "Menghasilkan performa klasifikasi yang sangat tinggi (> 93%) dengan kemampuan memisahkan kelas Iris Setosa secara sempurna (100%)."
+        ],
+        "differences": [
+            "Evaluasi pengujian model web pada data testing 80:20 memperoleh akurasi 93.33%, sedangkan jurnal mencatatkan akurasi 95.33% pada pengujian 10-Fold Cross Validation.",
+            "Pengujian validasi silang 10-Fold Cross Validation pada model web kami menghasilkan rata-rata akurasi 93.33% \u00b1 5.16%.",
+            "Pada project web ini, model dilengkapi dengan antarmuka interaktif Flask untuk pengujian data baru secara real-time dan perbandingan tambahan dengan model Multilayer Perceptron (MLP)."
+        ],
+        "cause_of_differences": [
+            "Perbedaan Metode Partisi Data: Jurnal referensi mengevaluasi model murni menggunakan rata-rata seluruh fold (10-Fold Cross Validation), sementara pengujian data baru pada web menggunakan skema Hold-out Split (80% Train, 20% Test).",
+            "Variasi Random State: Penentuan pengacakan data (random seed) saat partisi data mempengaruhi sebaran data versicolor dan virginica yang memiliki batas iris (overlapping) tipis pada fitur petal width.",
+            "Ukuran Dataset: Mengingat dataset Iris berukuran 150 sampel (30 data uji pada split 80:20), selisih 1 sampel yang salah tebak saja setara dengan perbedaan persentase akurasi sebesar 3.33%."
+        ]
+    }
+}
