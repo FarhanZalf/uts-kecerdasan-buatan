@@ -59,17 +59,29 @@ def download_dataset():
 @app.route('/evaluasi')
 def evaluasi_page():
     metrics = load_metrics()
+    df = load_dataset_df()
     
     test_results = metrics.get('model_evaluation', {}).get('test_results', [])
     test_labels = [item['periode'] for item in test_results]
     actual_vals = [item['aktual'] for item in test_results]
     pred_vals = [item['prediksi'] for item in test_results]
     
+    # Data linimasa penuh (149 bulan)
+    full_labels = df['periode'].tolist() if not df.empty else []
+    full_actual = df['penjualan_unit'].tolist() if not df.empty else []
+    
+    # Isi prediksi hanya pada 6 bulan terakhir (posisi testing data)
+    num_train = max(0, len(full_labels) - len(test_labels))
+    full_pred = ([None] * num_train) + pred_vals
+    
     return render_template('evaluasi.html', 
                            metrics=metrics,
                            test_labels=test_labels,
                            actual_vals=actual_vals,
-                           pred_vals=pred_vals)
+                           pred_vals=pred_vals,
+                           full_labels=full_labels,
+                           full_actual=full_actual,
+                           full_pred=full_pred)
 
 @app.route('/prediksi', methods=['GET', 'POST'])
 def prediksi_page():

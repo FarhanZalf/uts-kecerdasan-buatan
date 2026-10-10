@@ -83,70 +83,120 @@ window.renderSalesTrendChart = function (canvasId, labels, dataPoints) {
   });
 };
 
-// Grafik Perbandingan Aktual vs Prediksi pada Data Uji
-window.renderActualVsPredChart = function (canvasId, labels, actualData, predData) {
+// Grafik Perbandingan Aktual vs Prediksi pada Data Uji dengan Fitur Toggle Switcher
+let evalChartInstance = null;
+
+window.initEvalChartSwitcher = function (canvasId, testData, fullData) {
   const ctx = document.getElementById(canvasId);
   if (!ctx) return;
 
-  new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels: labels,
-      datasets: [
-        {
-          label: 'Data Aktual (GAIKINDO)',
-          data: actualData,
-          borderColor: '#10b981',
-          backgroundColor: 'rgba(16, 185, 129, 0.15)',
-          borderWidth: 3,
-          tension: 0.2,
-          pointRadius: 6,
-          pointBackgroundColor: '#10b981'
-        },
-        {
-          label: 'Prediksi Model MLP',
-          data: predData,
-          borderColor: '#ef4444',
-          borderDash: [5, 5],
-          backgroundColor: 'transparent',
-          borderWidth: 3,
-          tension: 0.2,
-          pointRadius: 6,
-          pointBackgroundColor: '#ef4444'
-        }
-      ]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: {
-          labels: { color: '#e2e8f0', font: { family: 'Plus Jakarta Sans', weight: '600' } }
-        },
-        tooltip: {
-          backgroundColor: '#0f172a',
-          callbacks: {
-            label: function (context) {
-              return context.dataset.label + ': ' + context.parsed.y.toLocaleString('id-ID') + ' Unit';
+  function buildConfig(mode) {
+    const isTest = mode === 'test';
+    const labels = isTest ? testData.labels : fullData.labels;
+    const actual = isTest ? testData.actual : fullData.actual;
+    const pred = isTest ? testData.pred : fullData.pred;
+
+    return {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [
+          {
+            label: isTest ? 'Data Aktual (GAIKINDO)' : 'Data Historis GAIKINDO (Aktual)',
+            data: actual,
+            borderColor: '#10b981',
+            backgroundColor: isTest ? 'rgba(16, 185, 129, 0.15)' : 'rgba(16, 185, 129, 0.08)',
+            borderWidth: isTest ? 3 : 2,
+            tension: 0.2,
+            pointRadius: isTest ? 6 : 1,
+            pointHoverRadius: 6,
+            pointBackgroundColor: '#10b981',
+            fill: !isTest
+          },
+          {
+            label: isTest ? 'Prediksi Model MLP' : 'Tebakan Model MLP (6 Bulan Data Uji)',
+            data: pred,
+            borderColor: '#ef4444',
+            borderDash: [5, 5],
+            backgroundColor: 'transparent',
+            borderWidth: 3,
+            tension: 0.2,
+            pointRadius: isTest ? 6 : 4,
+            pointHoverRadius: 7,
+            pointBackgroundColor: '#ef4444',
+            spanGaps: false
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            labels: { color: '#e2e8f0', font: { family: 'Plus Jakarta Sans', weight: '600' } }
+          },
+          tooltip: {
+            backgroundColor: '#0f172a',
+            callbacks: {
+              label: function (context) {
+                if (context.parsed.y === null || context.parsed.y === undefined) return '';
+                return context.dataset.label + ': ' + context.parsed.y.toLocaleString('id-ID') + ' Unit';
+              }
             }
           }
-        }
-      },
-      scales: {
-        x: {
-          grid: { color: 'rgba(255, 255, 255, 0.05)' },
-          ticks: { color: '#94a3b8' }
         },
-        y: {
-          grid: { color: 'rgba(255, 255, 255, 0.05)' },
-          ticks: {
-            color: '#94a3b8',
-            callback: function (val) {
-              return val.toLocaleString('id-ID');
+        scales: {
+          x: {
+            grid: { color: 'rgba(255, 255, 255, 0.05)' },
+            ticks: {
+              color: '#94a3b8',
+              maxTicksLimit: isTest ? 10 : 16
+            }
+          },
+          y: {
+            grid: { color: 'rgba(255, 255, 255, 0.05)' },
+            ticks: {
+              color: '#94a3b8',
+              callback: function (val) {
+                return val.toLocaleString('id-ID');
+              }
             }
           }
         }
       }
+    };
+  }
+
+  // Inisialisasi awal mode test (6 bulan)
+  evalChartInstance = new Chart(ctx, buildConfig('test'));
+
+  // Handler pergantian mode
+  window.switchEvalChart = function (mode) {
+    const btnTest = document.getElementById('btnModeTest');
+    const btnFull = document.getElementById('btnModeFull');
+    const title = document.getElementById('evalChartTitle');
+    const subtitle = document.getElementById('evalChartSubtitle');
+
+    if (mode === 'test') {
+      if (btnTest) btnTest.classList.add('btn-toggle-active');
+      if (btnFull) btnFull.classList.remove('btn-toggle-active');
+      if (title) title.textContent = 'Grafik Perbandingan: Data Aktual vs Prediksi Model MLP (Fokus Data Uji 6 Bulan)';
+      if (subtitle) subtitle.textContent = 'Garis hijau menunjukkan angka riil GAIKINDO, garis merah putus-putus menunjukkan tebakan model MLP.';
+    } else {
+      if (btnFull) btnFull.classList.add('btn-toggle-active');
+      if (btnTest) btnTest.classList.remove('btn-toggle-active');
+      if (title) title.textContent = 'Grafik Linimasa Penuh: Riwayat Penjualan (2011–2023) & Posisi Data Uji Model MLP';
+      if (subtitle) subtitle.textContent = 'Garis hijau adalah data historis (149 bulan). Di ujung kanan (Des 2022 s.d. Mei 2023) tampak perbandingan prediksi model MLP.';
     }
-  });
+
+    if (evalChartInstance) {
+      evalChartInstance.destroy();
+    }
+    evalChartInstance = new Chart(ctx, buildConfig(mode));
+  };
+};
+
+window.renderActualVsPredChart = function (canvasId, labels, actualData, predData) {
+  // Fallback kompatibilitas
+  window.initEvalChartSwitcher(canvasId, { labels, actual: actualData, pred: predData }, { labels, actual: actualData, pred: predData });
 };

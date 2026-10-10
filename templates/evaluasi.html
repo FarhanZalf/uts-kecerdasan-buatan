@@ -47,17 +47,30 @@
 </div>
 
 <div class="card" style="margin-bottom: 2rem;">
-    <div class="card-header">
+    <div class="card-header" style="flex-wrap: wrap; gap: 1rem; align-items: center;">
         <div>
-            <h3 class="card-title">Grafik Perbandingan: Data Aktual vs Prediksi Model MLP (Data Uji 6 Bulan)</h3>
-            <span style="font-size: 0.8rem; color: var(--text-muted);">
-                Garis hijau menunjukkan angka resmi GAIKINDO, garis merah putus-putus menunjukkan tebakan model MLP
+            <h3 class="card-title" id="evalChartTitle">Grafik Perbandingan: Data Aktual vs Prediksi Model MLP (Fokus Data Uji 6 Bulan)</h3>
+            <span style="font-size: 0.8rem; color: var(--text-muted);" id="evalChartSubtitle">
+                Garis hijau menunjukkan angka riil GAIKINDO, garis merah putus-putus menunjukkan tebakan model MLP.
             </span>
+        </div>
+        <div style="display: flex; gap: 0.4rem; background: rgba(255, 255, 255, 0.04); padding: 4px; border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
+            <button type="button" id="btnModeTest" class="btn btn-secondary btn-toggle-active" onclick="switchEvalChart('test')" style="padding: 0.4rem 0.85rem; font-size: 0.82rem;">
+                Fokus Data Uji (6 Bulan)
+            </button>
+            <button type="button" id="btnModeFull" class="btn btn-secondary" onclick="switchEvalChart('full')" style="padding: 0.4rem 0.85rem; font-size: 0.82rem;">
+                Linimasa Penuh (2011 – 2023)
+            </button>
         </div>
     </div>
     
-    <div class="chart-container" style="height: 340px;">
+    <div class="chart-container" style="height: 350px;">
         <canvas id="actualVsPredChart"></canvas>
+    </div>
+
+    <div style="margin-top: 1.2rem; padding: 0.9rem 1.1rem; background: rgba(56, 189, 248, 0.06); border: 1px solid rgba(56, 189, 248, 0.2); border-radius: var(--radius-sm); font-size: 0.85rem; color: #94a3b8; line-height: 1.6;">
+        <strong style="color: #38bdf8;">Penjelasan Metodologi Pembagian Data:</strong> 
+        Dari total 149 bulan data historis (2011–2023), <strong>143 bulan pertama</strong> digunakan sebagai <em>Data Training</em> agar model AI mempelajari pola tren penjualan. Sementara itu, <strong>6 bulan terakhir (Desember 2022 s.d. Mei 2023)</strong> sengaja dirahasiakan sebagai <em>Data Testing</em> untuk menguji seberapa akurat model memprediksi data masa depan yang belum pernah dilihatnya (sesuai standar metodologi Jurnal Informatika Polinema).
     </div>
 </div>
 
@@ -203,11 +216,19 @@
 {% block scripts %}
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        const labels = {{ test_labels | tojson }};
-        const actualData = {{ actual_vals | tojson }};
-        const predData = {{ pred_vals | tojson }};
-        if (window.renderActualVsPredChart) {
-            window.renderActualVsPredChart('actualVsPredChart', labels, actualData, predData);
+        const testData = {
+            labels: {{ test_labels | tojson }},
+            actual: {{ actual_vals | tojson }},
+            pred: {{ pred_vals | tojson }}
+        };
+        const fullData = {
+            labels: {{ full_labels | tojson }},
+            actual: {{ full_actual | tojson }},
+            pred: {{ full_pred | tojson }}
+        };
+
+        if (window.initEvalChartSwitcher) {
+            window.initEvalChartSwitcher('actualVsPredChart', testData, fullData);
         }
     });
 </script>

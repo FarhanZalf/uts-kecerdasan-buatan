@@ -448,6 +448,13 @@ body {
   color: #ffffff;
 }
 
+.btn-toggle-active {
+  background: var(--red-gradient) !important;
+  color: #ffffff !important;
+  border-color: #ef4444 !important;
+  box-shadow: 0 2px 10px rgba(239, 68, 68, 0.4) !important;
+}
+
 /* ================= TABLES ================= */
 .table-responsive {
   width: 100%;
