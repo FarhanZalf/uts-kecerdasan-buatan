@@ -3,7 +3,7 @@ import json
 import joblib
 import pandas as pd
 import numpy as np
-from flask import Flask, render_template, request, jsonify, send_file
+from flask import Flask, render_template, request, jsonify, send_file, redirect, url_for
 
 app = Flask(__name__)
 
@@ -149,8 +149,7 @@ def prediksi_page():
 
 @app.route('/komparasi')
 def komparasi_page():
-    metrics = load_metrics()
-    return render_template('komparasi.html', metrics=metrics)
+    return redirect(url_for('evaluasi_page'))
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)

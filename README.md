@@ -40,10 +40,11 @@ uts kb/
 │   ├── js/
 │   │   └── main.js                     # Integrasi Chart.js interaktif
 │   └── img/
-│       └── toyota_hero.jpg             # Foto otomotif Toyota
+│       ├── toyota_logo.png             # Logo resmi Toyota di navbar
+│       └── toyota_hero.jpg             # Foto otomotif Toyota di hero banner
 │
 ├── templates/
-│   ├── base.html                       # Layout dasar navbar & footer (Logo SVG Toyota)
+│   ├── base.html                       # Layout dasar navbar & footer
 │   ├── index.html                      # Beranda & grafik tren 2011–2023
 │   ├── dataset.html                    # Eksplorasi dataset GAIKINDO 149 baris
 │   ├── evaluasi.html                   # Evaluasi MAE, MSE, & komparasi jurnal
