@@ -52,7 +52,6 @@ uts kb/
 │
 ├── app.py                              # Server web Flask utama
 ├── train_model.py                      # Script pelatihan model MLP Time Series
-├── wsgi.py                             # Entrypoint deploy PythonAnywhere
 ├── requirements.txt                    # Dependensi Python
 ├── .gitignore                          # Ignore cache/temporary files
 └── README.md                           # Dokumentasi & panduan presentasi UTS
