@@ -7,29 +7,26 @@
     <div class="card-header">
         <div>
             <span class="badge-tag">Kriteria 7 Butir C & D UTS</span>
-            <h2 class="card-title" style="font-size: 1.6rem;">📈 Evaluasi Kinerja Model Multilayer Perceptron (MLP)</h2>
+            <h2 class="card-title" style="font-size: 1.6rem;">Evaluasi Kinerja Model Multilayer Perceptron (MLP)</h2>
         </div>
         <span class="badge-tag badge-cyan">
             Arsitektur: 10-15-1 (Sesuai Jurnal Polinema)
         </span>
     </div>
     <p style="color: var(--text-muted);">
-        Model dievaluasi menggunakan metrik standar regresi time series yang disyaratkan oleh Bu Abidatul Izzah, M.Kom: 
+        Model dievaluasi menggunakan metrik standar regresi time series yang disyaratkan: 
         <strong>Mean Absolute Error (MAE)</strong> dan <strong>Mean Squared Error (MSE)</strong>, serta dilengkapi <strong>MAPE</strong> untuk mengukur derajat keakuratan peramalan terhadap 6 bulan data testing (Desember 2022 s.d. Mei 2023).
     </p>
 </div>
 
-<!-- 4 Metrik Evaluasi Kunci -->
 <div class="grid-4">
     <div class="card stat-card">
-        <div class="stat-icon red">🎯</div>
         <div class="stat-value" style="color: #f87171;">{{ "{:,}".format(metrics.model_evaluation.mae) }}</div>
         <div class="stat-label">MAE (Mean Absolute Error)</div>
         <span style="font-size: 0.75rem; color: var(--text-dim); margin-top: 0.2rem;">Rata-rata selisih unit kendaraan</span>
     </div>
 
     <div class="card stat-card">
-        <div class="stat-icon cyan">📊</div>
         <div class="stat-value" style="font-size: 1.6rem; color: #38bdf8;">
             {{ "{:,.0f}".format(metrics.model_evaluation.mse) }}
         </div>
@@ -38,25 +35,22 @@
     </div>
 
     <div class="card stat-card">
-        <div class="stat-icon emerald">📏</div>
         <div class="stat-value" style="color: #34d399;">{{ "{:,}".format(metrics.model_evaluation.rmse) }}</div>
         <div class="stat-label">RMSE (Root MSE)</div>
         <span style="font-size: 0.75rem; color: var(--text-dim); margin-top: 0.2rem;">Akar kuadrat galat (Unit)</span>
     </div>
 
     <div class="card stat-card">
-        <div class="stat-icon blue">🌟</div>
         <div class="stat-value" style="color: #60a5fa;">{{ metrics.model_evaluation.mape }}%</div>
         <div class="stat-label">MAPE (Tingkat Error)</div>
         <span style="font-size: 0.75rem; color: #34d399; margin-top: 0.2rem; font-weight: 600;">Kategori: Sangat Akurat (&lt;10%)</span>
     </div>
 </div>
 
-<!-- Grafik Perbandingan Aktual vs Prediksi pada Data Uji -->
 <div class="card" style="margin-bottom: 2rem;">
     <div class="card-header">
         <div>
-            <h3 class="card-title">📉 Grafik Perbandingan: Data Aktual vs Prediksi Model MLP (Data Uji 6 Bulan)</h3>
+            <h3 class="card-title">Grafik Perbandingan: Data Aktual vs Prediksi Model MLP (Data Uji 6 Bulan)</h3>
             <span style="font-size: 0.8rem; color: var(--text-muted);">
                 Garis hijau menunjukkan angka resmi GAIKINDO, garis merah putus-putus menunjukkan tebakan model MLP
             </span>
@@ -68,12 +62,10 @@
     </div>
 </div>
 
-<!-- Tabel Rincian Data Uji Per Bulan & Arsitektur Jaringan -->
 <div class="grid-2" style="margin-bottom: 2rem;">
-    <!-- Tabel Rincian Data Testing -->
     <div class="card">
         <div class="card-header">
-            <h3 class="card-title">📋 Rincian Pengujian 6 Bulan Data Testing</h3>
+            <h3 class="card-title">Rincian Pengujian 6 Bulan Data Testing</h3>
         </div>
         <div class="table-responsive">
             <table class="custom-table">
@@ -101,10 +93,9 @@
         </div>
     </div>
 
-    <!-- Informasi Arsitektur Jaringan MLP -->
     <div class="card">
         <div class="card-header">
-            <h3 class="card-title">🧠 Detail Arsitektur Jaringan Syaraf Tiruan</h3>
+            <h3 class="card-title">Detail Arsitektur Jaringan Syaraf Tiruan</h3>
         </div>
         <ul style="padding-left: 1.2rem; color: var(--text-muted); font-size: 0.92rem; line-height: 1.9;">
             <li>
@@ -127,7 +118,7 @@
 
         <div style="margin-top: 1.2rem; padding: 0.9rem; background: rgba(16, 185, 129, 0.1); border-radius: var(--radius-sm); border: 1px solid rgba(16, 185, 129, 0.25);">
             <div style="font-weight: 700; color: #34d399; font-size: 0.88rem;">
-                ✅ Kesimpulan Kinerja Model:
+                Kesimpulan Kinerja Model:
             </div>
             <p style="font-size: 0.84rem; color: var(--text-muted); margin: 0; margin-top: 0.2rem;">
                 Dengan nilai MAPE sebesar <strong>{{ metrics.model_evaluation.mape }}%</strong> (di bawah standar 10%), kemampuan model MLP tergolong dalam kategori <em>High Accuracy Forecasting</em> (Sangat Akurat).
@@ -136,12 +127,11 @@
     </div>
 </div>
 
-<!-- ================= SECTION KOMPARASI DENGAN JURNAL POLINEMA (POIN 8 UTS) ================= -->
 <div class="card" style="border-color: rgba(239, 68, 68, 0.35); background: linear-gradient(135deg, rgba(239, 68, 68, 0.07) 0%, rgba(6, 182, 212, 0.07) 100%);">
     <div class="card-header">
         <div>
             <span class="badge-tag">Kriteria Wajib Poin 8 UTS</span>
-            <h3 class="card-title" style="font-size: 1.4rem;">⚖️ Komparasi Hasil dengan Jurnal Informatika Polinema (2024)</h3>
+            <h3 class="card-title" style="font-size: 1.4rem;">Komparasi Hasil dengan Jurnal Informatika Polinema (2024)</h3>
         </div>
     </div>
     
@@ -150,7 +140,6 @@
         <strong style="color: #ffffff;">"{{ metrics.journal_comparison.paper_title }}"</strong> (Penulis: {{ metrics.journal_comparison.authors }}, <em>JIP Polinema</em> Vol. 11 No. 1, November 2024).
     </p>
 
-    <!-- Tabel Komparasi Berdampingan -->
     <div class="table-responsive" style="margin-bottom: 1.5rem;">
         <table class="custom-table">
             <thead>
@@ -190,22 +179,21 @@
         </table>
     </div>
 
-    <!-- 3 Box Analisis Poin 8 -->
     <div class="grid-3">
         <div class="card comparison-box">
-            <h4 style="color: #ffffff; margin-bottom: 0.6rem;">🤝 1. Persamaan</h4>
+            <h4 style="color: #ffffff; margin-bottom: 0.6rem;">1. Persamaan</h4>
             <p style="font-size: 0.84rem; color: var(--text-muted); line-height: 1.6;">
                 Menggunakan data resmi GAIKINDO (Januari 2011 s.d. Mei 2023), arsitektur jaringan MLP 10-15-1 identik, serta menghasilkan kategori peramalan 'Sangat Akurat' dengan MAPE &lt; 10%.
             </p>
         </div>
         <div class="card comparison-box">
-            <h4 style="color: #ffffff; margin-bottom: 0.6rem;">⚡ 2. Perbedaan</h4>
+            <h4 style="color: #ffffff; margin-bottom: 0.6rem;">2. Perbedaan</h4>
             <p style="font-size: 0.84rem; color: var(--text-muted); line-height: 1.6;">
                 Nilai MAE model kami adalah {{ "{:,}".format(metrics.journal_comparison.our_mae) }} unit vs {{ "{:,}".format(metrics.journal_comparison.paper_mae) }} unit di jurnal. Selisih hanya ~68 unit kendaraan (di bawah 0,3% dari total penjualan bulanan).
             </p>
         </div>
         <div class="card comparison-box">
-            <h4 style="color: #ffffff; margin-bottom: 0.6rem;">🔍 3. Penyebab Perbedaan</h4>
+            <h4 style="color: #ffffff; margin-bottom: 0.6rem;">3. Penyebab Perbedaan</h4>
             <p style="font-size: 0.84rem; color: var(--text-muted); line-height: 1.6;">
                 Variasi acak bobot awal (weight initialization) pada training MLP di framework Scikit-Learn. Selisih yang sangat tipis ini membuktikan model berhasil mereplikasi temuan jurnal secara valid.
             </p>

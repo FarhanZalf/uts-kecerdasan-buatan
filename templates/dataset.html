@@ -7,15 +7,15 @@
     <div class="card-header">
         <div>
             <span class="badge-tag">Kriteria 7 Butir A & B UTS</span>
-            <h2 class="card-title" style="font-size: 1.6rem;">📊 Sumber & Karakteristik Data Time Series GAIKINDO</h2>
+            <h2 class="card-title" style="font-size: 1.6rem;">Sumber & Karakteristik Data Time Series GAIKINDO</h2>
         </div>
         <a href="{{ url_for('download_dataset') }}" class="btn btn-secondary" style="font-size: 0.85rem; padding: 0.5rem 1rem;">
-            📥 Unduh Dataset CSV
+            Unduh Dataset CSV
         </a>
     </div>
 
     <p style="color: var(--text-muted); margin-bottom: 1.5rem;">
-        Dataset yang digunakan dalam penelitian ini adalah data deret waktu (<em>time series</em>) penjualan bulanan mobil Toyota di Indonesia yang dipublikasikan secara resmi oleh 
+        Dataset yang digunakan dalam penelitian ini adalah data deret waktu (time series) penjualan bulanan mobil Toyota di Indonesia yang dipublikasikan secara resmi oleh 
         <a href="https://www.gaikindo.or.id/indonesian-automobile-industry-data/" target="_blank" style="color: #f87171; text-decoration: underline;">
             GAIKINDO (Gabungan Industri Kendaraan Bermotor Indonesia)
         </a> pada bagian <em>Indonesian Automobile Wholesales by Brand</em>. Data ini mencakup 149 bulan pengamatan dari Januari 2011 hingga Mei 2023.
@@ -51,11 +51,10 @@
     </div>
 </div>
 
-<!-- Penjelasan Preprocessing & Pembagian Data Time Series -->
 <div class="grid-2">
     <div class="card">
         <div class="card-header">
-            <h3 class="card-title">⚙️ Tahapan Preprocessing Data Time Series</h3>
+            <h3 class="card-title">Tahapan Preprocessing Data Time Series</h3>
         </div>
         <ul style="padding-left: 1.2rem; color: var(--text-muted); font-size: 0.92rem; line-height: 1.8;">
             <li>
@@ -75,10 +74,10 @@
 
     <div class="card">
         <div class="card-header">
-            <h3 class="card-title">📅 Pembagian Data Training & Testing</h3>
+            <h3 class="card-title">Pembagian Data Training & Testing</h3>
         </div>
         <p style="color: var(--text-muted); font-size: 0.92rem; margin-bottom: 1rem;">
-            Karena data berformat <em>time series</em>, pembagian data <strong>tidak boleh diacak (non-shuffled)</strong> agar tidak terjadi <em>data leakage</em> dari masa depan:
+            Karena data berformat time series, pembagian data tidak diacak (non-shuffled) agar tidak terjadi kebocoran data (data leakage):
         </p>
         <div style="padding: 1rem; background: rgba(255, 255, 255, 0.03); border-radius: var(--radius-sm); margin-bottom: 0.8rem; border-left: 4px solid #38bdf8;">
             <div style="font-weight: 700; color: #ffffff;">Data Training (133 Sampel)</div>
@@ -89,21 +88,20 @@
         <div style="padding: 1rem; background: rgba(255, 255, 255, 0.03); border-radius: var(--radius-sm); border-left: 4px solid #ef4444;">
             <div style="font-weight: 700; color: #ffffff;">Data Testing (6 Sampel Terakhir)</div>
             <div style="font-size: 0.85rem; color: var(--text-muted);">
-                Periode: <strong>{{ metrics.dataset_info.test_period }}</strong>. Digunakan untuk menguji akurasi model pada data baru (persis seperti di jurnal Polinema).
+                Periode: <strong>{{ metrics.dataset_info.test_period }}</strong>. Digunakan untuk menguji akurasi model pada data baru (sesuai jurnal Polinema).
             </div>
         </div>
     </div>
 </div>
 
-<!-- Tabel Dataset Lengkap 149 Baris -->
 <div class="card">
     <div class="card-header">
         <div>
-            <h3 class="card-title">📋 Tabel Data Historis Penjualan Bulanan Toyota (149 Baris)</h3>
-            <span style="font-size: 0.8rem; color: var(--text-dim);">Gunakan pencarian untuk melihat tahun atau bulan tertentu</span>
+            <h3 class="card-title">Tabel Data Historis Penjualan Bulanan Toyota (149 Baris)</h3>
+            <span style="font-size: 0.8rem; color: var(--text-dim);">Gunakan pencarian untuk menyaring tahun atau bulan tertentu</span>
         </div>
         <div style="width: 250px;">
-            <input type="text" id="tableSearchInput" class="form-control" placeholder="🔍 Cari tahun / bulan..." style="padding: 0.5rem 0.8rem; font-size: 0.85rem;">
+            <input type="text" id="tableSearchInput" class="form-control" placeholder="Cari tahun / bulan..." style="padding: 0.5rem 0.8rem; font-size: 0.85rem;">
         </div>
     </div>
 

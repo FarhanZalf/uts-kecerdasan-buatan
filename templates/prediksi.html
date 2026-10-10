@@ -7,37 +7,35 @@
     <div class="card-header">
         <div>
             <span class="badge-tag">Kriteria 7 Butir E UTS</span>
-            <h2 class="card-title" style="font-size: 1.6rem;">🔮 Uji Prediksi Manual & Simulasi Skenario Pasar</h2>
+            <h2 class="card-title" style="font-size: 1.6rem;">Uji Prediksi Manual & Simulasi Skenario Pasar</h2>
         </div>
         <span class="badge-tag badge-cyan">
             Input Bebas Pengujian Dosen
         </span>
     </div>
     <p style="color: var(--text-muted);">
-        Halaman ini dirancang khusus untuk sesi pengujian dan demo langsung. Anda atau dosen penguji dapat <strong>mengetikkan angka penjualan sendiri secara bebas</strong> pada 10 bulan sebelumnya untuk melihat bagaimana model <strong>Multilayer Perceptron (MLP)</strong> memprediksi penjualan mobil pada bulan berikutnya.
+        Halaman ini dirancang khusus untuk sesi pengujian dan demo langsung. Anda atau dosen penguji dapat memasukkan angka penjualan sendiri secara bebas pada 10 bulan sebelumnya untuk melihat bagaimana model <strong>Multilayer Perceptron (MLP)</strong> memprediksi penjualan mobil pada bulan berikutnya.
     </p>
 
-    <!-- Tombol Pintas Skenario Cepat -->
     <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 0.8rem; margin-top: 1.2rem; padding-top: 1.2rem; border-top: 1px solid var(--border-color);">
-        <span style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600;">⚡ Contoh Pengisian Cepat:</span>
+        <span style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600;">Contoh Pengisian Cepat:</span>
         <button type="button" class="btn btn-secondary" onclick="fillScenario('normal')" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">
-            📊 1. Data Riil Terakhir GAIKINDO (~28.000)
+            1. Data Riil Terakhir GAIKINDO (~28.000)
         </button>
         <button type="button" class="btn btn-secondary" onclick="fillScenario('krisis')" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; border-color: rgba(239, 68, 68, 0.4); color: #f87171;">
-            📉 2. Simulasi Krisis / Pasar Anjlok (~12.000)
+            2. Simulasi Krisis / Pasar Anjlok (~12.000)
         </button>
         <button type="button" class="btn btn-secondary" onclick="fillScenario('booming')" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; border-color: rgba(16, 185, 129, 0.4); color: #34d399;">
-            🚀 3. Simulasi Booming / Promo GIIAS (~36.000)
+            3. Simulasi Booming / Promo GIIAS (~36.000)
         </button>
     </div>
 </div>
 
 <div class="grid-2">
-    <!-- Form Input Manual 10 Bulan -->
     <div class="card">
         <form method="POST" action="{{ url_for('prediksi_page') }}" id="manualForm">
             <div class="card-header">
-                <h3 class="card-title">📝 Input Riwayat 10 Bulan Terakhir (Unit Mobil)</h3>
+                <h3 class="card-title">Input Riwayat 10 Bulan Terakhir (Unit Mobil)</h3>
             </div>
             
             <p style="font-size: 0.82rem; color: var(--text-dim); margin-bottom: 1.2rem;">
@@ -58,12 +56,11 @@
             </div>
 
             <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1.5rem; font-size: 1rem;">
-                🔍 Prediksi Penjualan Bulan Berikutnya &rarr;
+                Prediksi Penjualan Bulan Berikutnya &rarr;
             </button>
         </form>
     </div>
 
-    <!-- Hasil Prediksi -->
     <div>
         {% if result and not result.error %}
         <div class="forecast-card">
@@ -79,12 +76,11 @@
                 {{ "{:,}".format(result.prediction_val) }} <span style="font-size: 1.2rem; color: var(--text-dim); font-weight: 500;">Unit Mobil</span>
             </div>
 
-            <!-- Analisis Tren Naik / Turun -->
             <div style="padding: 0.8rem 1rem; border-radius: var(--radius-sm); margin-bottom: 1.2rem; display: flex; align-items: center; justify-content: space-between; background: rgba(0,0,0,0.3); border: 1px solid var(--border-color);">
                 <div>
                     <span style="font-size: 0.78rem; color: var(--text-dim); display: block;">Perbandingan dgn Bulan ke-10 ({{ "{:,}".format(result.last_val) }} Unit):</span>
                     <strong style="font-size: 0.95rem; color: {% if result.is_increase %}#34d399{% else %}#f87171{% endif %};">
-                        {% if result.is_increase %}▲ Naik +{{ "{:,}".format(result.diff) }} Unit ({{ result.pct_change }}%){% else %}▼ Turun {{ "{:,}".format(result.diff) }} Unit ({{ result.pct_change }}%){% endif %}
+                        {% if result.is_increase %}Naik +{{ "{:,}".format(result.diff) }} Unit (+{{ result.pct_change }}%){% else %}Turun {{ "{:,}".format(result.diff) }} Unit ({{ result.pct_change }}%){% endif %}
                     </strong>
                 </div>
                 <span class="badge-tag" style="margin: 0; background: {% if result.is_increase %}rgba(16,185,129,0.2){% else %}rgba(239,68,68,0.2){% endif %}; color: {% if result.is_increase %}#34d399{% else %}#f87171{% endif %};">
@@ -92,10 +88,9 @@
                 </span>
             </div>
 
-            <!-- Grafik Garis Visualisasi 10 Titik Input + 1 Titik Prediksi -->
             <div style="margin-top: 1rem;">
                 <div style="font-size: 0.85rem; font-weight: 600; color: #ffffff; margin-bottom: 0.4rem;">
-                    📈 Visualisasi 10 Bulan Input vs Titik Prediksi:
+                    Visualisasi 10 Bulan Input vs Titik Prediksi:
                 </div>
                 <div style="height: 220px; position: relative;">
                     <canvas id="predictionScenarioChart"></canvas>
@@ -104,12 +99,11 @@
         </div>
         {% else %}
         <div class="card" style="height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 3rem 2rem;">
-            <div style="font-size: 3.5rem; margin-bottom: 1rem;">🚗</div>
             <h3 style="font-family: var(--font-heading); font-size: 1.3rem; margin-bottom: 0.6rem; color: #ffffff;">
                 Form Uji Siap Digunakan
             </h3>
             <p style="color: var(--text-muted); font-size: 0.9rem; max-width: 360px;">
-                Ubah angka penjualan pada 10 kotak input di sebelah kiri, atau gunakan tombol <em>Contoh Pengisian Cepat</em>, lalu klik <strong>Prediksi Penjualan Bulan Berikutnya</strong>.
+                Ubah angka penjualan pada 10 kotak input di sebelah kiri, atau gunakan tombol <em>Contoh Pengisian Cepat</em>, lalu klik tombol <strong>Prediksi Penjualan Bulan Berikutnya</strong>.
             </p>
         </div>
         {% endif %}
@@ -119,7 +113,6 @@
 
 {% block scripts %}
 <script>
-    // Fungsi Pengisian Cepat Skenario
     const scenarios = {
         normal: [27239, 26367, 30844, 33449, 33740, 26667, 30632, 28970, 27336, 28178],
         krisis: [24150, 25120, 17850, 2093, 672, 3775, 7332, 8740, 13234, 16419],
@@ -143,10 +136,9 @@
             const historyData = {{ result.chart_history | tojson }};
             const predVal = {{ result.prediction_val }};
 
-            // Gabungkan dataset history (10 titik) dan dataset prediksi (titik ke-11)
             const fullHistory = [...historyData, null];
             const fullPred = Array(10).fill(null).concat([predVal]);
-            fullPred[9] = historyData[9]; // hubungkan garis dari titik 10 ke titik 11
+            fullPred[9] = historyData[9];
 
             new Chart(ctx, {
                 type: 'line',

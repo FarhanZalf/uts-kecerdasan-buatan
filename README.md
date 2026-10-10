@@ -1,29 +1,29 @@
-# 🚗 Prediksi Penjualan Mobil Toyota di Indonesia Menggunakan Time Series Multilayer Perceptron (MLP)
+# Prediksi Penjualan Mobil Toyota di Indonesia Menggunakan Time Series Multilayer Perceptron (MLP)
 > **Project Ujian Tengah Semester (UTS) — Mata Kuliah Kecerdasan Buatan**  
 > **Program Studi D3 Manajemen Informatika — PSDKU Kota Kediri — Politeknik Negeri Malang**  
 > **Dosen Pengampu:** Abidatul Izzah, M.Kom  
 
 ---
 
-## 📌 Ringkasan Project
+## Ringkasan Project
 Aplikasi web berbasis **Flask** yang menerapkan pemodelan deret waktu (*time series forecasting*) menggunakan algoritma **Multilayer Perceptron (MLP)** dengan arsitektur **10-15-1** untuk memprediksi volume penjualan bulanan mobil Toyota di Indonesia.
 
-Project ini 100% memenuhi seluruh kriteria topik **Prediksi Data (Poin 7 & 8)** soal UTS Bu Izzah:
-1. ✅ **Data Time Series:** Menggunakan 149 bulan data historis deret waktu dari Januari 2011 hingga Mei 2023.
-2. ✅ **Sumber Dataset Resmi:** Bersumber dari **GAIKINDO** (*Gabungan Industri Kendaraan Bermotor Indonesia*) pada bagian *Indonesian Automobile Wholesales by Brand*.
-3. ✅ **Preprocessing Data:** Normalisasi MinMaxScaler [0, 1] dan pembentukan fitur *Sliding Window / Lag-10*.
-4. ✅ **Model Multilayer Perceptron (MLP):** Arsitektur 10 Input $\rightarrow$ 15 Hidden (ReLU) $\rightarrow$ 1 Output dengan Optimizer Adam.
-5. ✅ **Evaluasi Model Sesuai Syarat:**
+Project ini memenuhi seluruh kriteria topik **Prediksi Data (Poin 7 & 8)** soal UTS:
+1. **Data Time Series:** Menggunakan 149 bulan data historis deret waktu dari Januari 2011 hingga Mei 2023.
+2. **Sumber Dataset Resmi:** Bersumber dari **GAIKINDO** (*Gabungan Industri Kendaraan Bermotor Indonesia*) pada bagian *Indonesian Automobile Wholesales by Brand*.
+3. **Preprocessing Data:** Normalisasi MinMaxScaler [0, 1] dan pembentukan fitur *Sliding Window / Lag-10*.
+4. **Model Multilayer Perceptron (MLP):** Arsitektur 10 Input -> 15 Hidden (ReLU) -> 1 Output dengan Optimizer Adam.
+5. **Evaluasi Model Sesuai Syarat:**
    * **MAE (*Mean Absolute Error*):** **1.947,71 Unit** (Rata-rata selisih tebakan sangat kecil dari rata-rata penjualan 27.000 unit/bulan).
    * **MSE (*Mean Squared Error*):** **7.754.258,95**.
    * **MAPE:** **7,86%** (Kategori peramalan: *Sangat Akurat* / di bawah 10%).
-6. ✅ **Prediksi untuk Periode Tertentu:** Fitur simulasi peramalan multi-step untuk 1 bulan, 3 bulan, hingga 6 bulan mendatang.
-7. ✅ **Komparasi Artikel Jurnal (Poin 8 UTS):** Menggunakan artikel jurnal referensi resmi dari kampus sendiri:  
+6. **Prediksi untuk Periode Tertentu:** Fitur pengujian manual bebas 10 bulan dengan visualisasi titik prediksi ke-11.
+7. **Komparasi Artikel Jurnal (Poin 8 UTS):** Menggunakan artikel jurnal referensi resmi dari kampus sendiri:  
    *Muhammad Nabil Afkar, Dewi Titania Randa, Rizal Adi Saputra (November 2024). "Prediksi Penjualan Mobil Toyota di Indonesia Menggunakan Multi-Layer Perceptron"*, **Jurnal Informatika Polinema (JIP)**, Vol. 11 No. 1, Hal. 91–98. DOI: [10.33795/jip.v11i1.6339](https://doi.org/10.33795/jip.v11i1.6339).
 
 ---
 
-## 📁 Struktur Direktori
+## Struktur Direktori
 ```text
 uts kb/
 │
@@ -43,24 +43,23 @@ uts kb/
 │       └── toyota_hero.jpg             # Foto otomotif Toyota
 │
 ├── templates/
-│   ├── base.html                       # Layout dasar navbar & footer
+│   ├── base.html                       # Layout dasar navbar & footer (Logo SVG Toyota)
 │   ├── index.html                      # Beranda & grafik tren 2011–2023
 │   ├── dataset.html                    # Eksplorasi dataset GAIKINDO 149 baris
-│   ├── evaluasi.html                   # Evaluasi MAE, MSE, & grafik aktual vs prediksi
-│   ├── prediksi.html                   # Uji simulasi peramalan periode masa depan
-│   └── komparasi.html                  # Analisis komparasi Jurnal Informatika Polinema (Poin 8)
+│   ├── evaluasi.html                   # Evaluasi MAE, MSE, & komparasi jurnal
+│   └── prediksi.html                   # Uji simulasi peramalan input manual bebas
 │
 ├── app.py                              # Server web Flask utama
 ├── train_model.py                      # Script pelatihan model MLP Time Series
 ├── wsgi.py                             # Entrypoint deploy PythonAnywhere
 ├── requirements.txt                    # Dependensi Python
 ├── .gitignore                          # Ignore cache/temporary files
-└── README.md                           # Dokumentasi & contekan presentasi UTS
+└── README.md                           # Dokumentasi & panduan presentasi UTS
 ```
 
 ---
 
-## 💻 Cara Menjalankan Secara Lokal
+## Cara Menjalankan Secara Lokal
 
 1. **Buka Terminal / Command Prompt** pada folder project ini:
    ```bash
@@ -77,12 +76,12 @@ uts kb/
 
 ---
 
-## 🚀 Panduan Deploy ke PythonAnywhere (Via GitHub)
+## Panduan Deploy ke PythonAnywhere (Via GitHub)
 
 1. **Push ke GitHub:**
    ```bash
    git add .
-   git commit -m "feat: complete Toyota sales time series MLP prediction for UTS AI"
+   git commit -m "feat: complete Toyota sales time series MLP prediction"
    git push -u origin main
    ```
 
@@ -94,7 +93,7 @@ uts kb/
    ```
 
 3. **Di Tab Web PythonAnywhere:**
-   * Add a new web app $\rightarrow$ Manual configuration $\rightarrow$ Python 3.10.
+   * Add a new web app -> Manual configuration -> Python 3.10.
    * Set Source code: `/home/USERNAME-ANDA/NAMA-REPO`
    * Buka file WSGI, isi dengan:
      ```python
@@ -111,12 +110,12 @@ uts kb/
 
 ---
 
-## 🎤 Contekan Presentasi 10 Menit di Depan Bu Izzah
+## Rangkuman Presentasi 10 Menit di Depan Bu Izzah
 
 | Menit | Alur Presentasi | Poin yang Disampaikan |
 | :--- | :--- | :--- |
-| **00:00 - 02:00** | **Pendahuluan & Jurnal** | *"Kelompok kami memilih topik **Prediksi Data Time Series** dengan objek penjualan mobil Toyota di Indonesia. Rujukan utama kami adalah karya ilmiah dari kampus kita sendiri: **Jurnal Informatika Polinema (JIP) November 2024**."* |
-| **02:00 - 04:00** | **Dataset & Preprocessing** | Buka menu **Dataset**. Jelaskan data bersumber dari **GAIKINDO** (149 bulan dari 2011 s.d. 2023). Tunjukkan preprocessing: normalisasi MinMaxScaler dan pembentukan fitur *Lag-10* (menggunakan 10 bulan sebelumnya untuk memprediksi bulan berikutnya). Pembagian data latih 133 sampel dan data uji 6 bulan terakhir. |
-| **04:00 - 06:30** | **Model & Evaluasi (Poin 7)** | Buka menu **Evaluasi**. Tunjukkan arsitektur **MLP 10-15-1** dengan aktivasi ReLU dan optimizer Adam. Tunjukkan nilai **MAE = 1.947 unit** dan **MSE**, serta grafik garis Chart.js yang memperlihatkan kedekatan garis tebakan model dengan data riil GAIKINDO. Jelaskan bahwa MAPE 7.8% masuk kategori *Sangat Akurat*. |
-| **06:30 - 08:30** | **Demo Prediksi Periode** | Buka menu **Uji Prediksi Waktu**. Pilih prediksi 3 bulan ke depan, klik tombol prediksi. Tunjukkan bahwa sistem memperkirakan penjualan di bulan Juni–Agustus 2023 berada di kisaran ~28.000 unit. Jelaskan manfaatnya untuk perencanaan stok pabrik. |
-| **08:30 - 10:00** | **Komparasi Jurnal (Poin 8)** | Buka menu **Komparasi Jurnal**. Jelaskan persamaan metode dan data GAIKINDO, perbedaan MAE (1.947 unit vs 1.879 unit di jurnal), serta analisis penyebabnya (perbedaan random seed inisialisasi bobot awal neural network pada Scikit-Learn dengan selisih yang sangat tipis). Tutup presentasi. |
+| **00:00 - 02:00** | **Pendahuluan & Jurnal** | Kelompok kami memilih topik **Prediksi Data Time Series** dengan objek penjualan mobil Toyota di Indonesia. Rujukan utama kami adalah karya ilmiah dari kampus kita sendiri: **Jurnal Informatika Polinema (JIP) November 2024**. |
+| **02:00 - 04:00** | **Dataset & Preprocessing** | Buka menu **Dataset GAIKINDO**. Jelaskan data bersumber dari GAIKINDO (149 bulan dari 2011 s.d. 2023). Tunjukkan preprocessing: normalisasi MinMaxScaler dan pembentukan fitur Lag-10 (menggunakan 10 bulan sebelumnya untuk memprediksi bulan berikutnya). Pembagian data latih 133 sampel dan data uji 6 bulan terakhir. |
+| **04:00 - 06:30** | **Model & Evaluasi (Poin 7)** | Buka menu **Evaluasi & Komparasi**. Tunjukkan arsitektur MLP 10-15-1 dengan aktivasi ReLU dan optimizer Adam. Tunjukkan nilai MAE = 1.947 unit dan MSE, serta grafik garis Chart.js yang memperlihatkan kedekatan garis tebakan model dengan data riil GAIKINDO. Jelaskan bahwa MAPE 7.8% masuk kategori Sangat Akurat. |
+| **06:30 - 08:30** | **Demo Prediksi Manual** | Buka menu **Uji Prediksi Manual**. Tunjukkan bahwa dosen bisa memasukkan angka penjualan 10 bulan terakhir sesuka hati atau klik contoh skenario (Normal, Krisis, Booming). Klik prediksi, dan tunjukkan tebakan bulan ke-11 beserta visualisasi grafiknya. |
+| **08:30 - 10:00** | **Komparasi Jurnal (Poin 8)** | Tunjukkan bagian komparasi di bawah halaman Evaluasi. Jelaskan persamaan metode dan data GAIKINDO, perbedaan MAE (1.947 unit vs 1.879 unit di jurnal), serta analisis penyebabnya (perbedaan random seed inisialisasi bobot awal neural network pada Scikit-Learn dengan selisih yang sangat tipis). Tutup presentasi. |

@@ -3,15 +3,14 @@
 {% block title %}Beranda | Prediksi Penjualan Mobil Toyota GAIKINDO{% endblock %}
 
 {% block content %}
-<!-- Hero Section -->
 <div class="hero">
     <div class="hero-text">
-        <div class="badge-tag">🚗 Project UTS Kecerdasan Buatan (Poin 7 & 8)</div>
+        <div class="badge-tag">Project UTS Kecerdasan Buatan (Poin 7 & 8)</div>
         <h1 class="hero-title">
             Peramalan Tren <span class="gradient-text">Penjualan Mobil Toyota</span> di Indonesia
         </h1>
         <p class="hero-subtitle">
-            Aplikasi web cerdas berbasis <strong>Multilayer Perceptron (MLP)</strong> untuk prediksi data <em>time series</em> penjualan kendaraan bulanan di Indonesia menggunakan data resmi <strong>GAIKINDO</strong> dan rujukan ilmiah dari <strong>Jurnal Informatika Polinema (2024)</strong>.
+            Aplikasi web berbasis <strong>Multilayer Perceptron (MLP)</strong> untuk prediksi data deret waktu (time series) penjualan kendaraan bulanan di Indonesia menggunakan data resmi <strong>GAIKINDO</strong> dan rujukan ilmiah dari <strong>Jurnal Informatika Polinema (2024)</strong>.
         </p>
 
         <div class="hero-meta">
@@ -39,37 +38,31 @@
     </div>
 </div>
 
-<!-- 4 Quick Stat Cards -->
 <div class="grid-4">
     <div class="card stat-card">
-        <div class="stat-icon red">📈</div>
         <div class="stat-value">{{ metrics.dataset_info.total_samples }}</div>
         <div class="stat-label">Bulan Data Historis (GAIKINDO)</div>
     </div>
     <div class="card stat-card">
-        <div class="stat-icon cyan">⏱️</div>
         <div class="stat-value">12.5</div>
         <div class="stat-label">Tahun Periode (2011 – 2023)</div>
     </div>
     <div class="card stat-card">
-        <div class="stat-icon emerald">🎯</div>
         <div class="stat-value">{{ metrics.model_evaluation.mae }}</div>
         <div class="stat-label">MAE Selisih Rata-rata (Unit)</div>
     </div>
     <div class="card stat-card">
-        <div class="stat-icon blue">🧠</div>
         <div class="stat-value">10-15-1</div>
         <div class="stat-label">Arsitektur Multi-Layer Perceptron</div>
     </div>
 </div>
 
-<!-- Grafik Garis Tren Penjualan 2011 - 2023 (Interactive Chart.js) -->
 <div class="card" style="margin-bottom: 2rem;">
     <div class="card-header">
         <div>
-            <h3 class="card-title">📉 Tren Historis Penjualan Bulanan Toyota di Indonesia (2011 – 2023)</h3>
+            <h3 class="card-title">Tren Historis Penjualan Bulanan Toyota di Indonesia (2011 – 2023)</h3>
             <span style="font-size: 0.8rem; color: var(--text-muted);">
-                Arahkan kursor pada garis untuk melihat rincian unit penjualan per bulan (terlihat drop drastis pada April 2020 akibat pandemi, dan lonjakan pasca insentif PPnBM)
+                Arahkan kursor pada garis grafik untuk melihat rincian angka penjualan per bulan.
             </span>
         </div>
         <a href="{{ url_for('dataset_page') }}" class="btn btn-secondary" style="font-size: 0.85rem; padding: 0.4rem 0.9rem;">
@@ -82,29 +75,28 @@
     </div>
 </div>
 
-<!-- Modul UTS Kunci -->
 <div class="grid-2">
     <div class="card">
         <div class="card-header">
-            <h3 class="card-title">🎯 Fitur Simulasi Prediksi Waktu</h3>
+            <h3 class="card-title">Simulasi Prediksi Manual</h3>
         </div>
         <p style="color: var(--text-muted); font-size: 0.92rem; margin-bottom: 1.2rem;">
-            Sistem dapat melakukan peramalan iteratif berbasis <em>sliding window</em> untuk memperkirakan volume penjualan mobil 1 s.d. 6 bulan mendatang. Sangat berguna untuk manajemen persediaan stok pabrikan dan dealer.
+            Pengujian model secara manual untuk menganalisis perkiraan penjualan bulan berikutnya berdasarkan 10 bulan riwayat yang dimasukkan.
         </p>
         <a href="{{ url_for('prediksi_page') }}" class="btn btn-primary" style="font-size: 0.9rem;">
-            🔮 Coba Simulasi Prediksi Masa Depan &rarr;
+            Buka Form Prediksi Manual &rarr;
         </a>
     </div>
 
     <div class="card">
         <div class="card-header">
-            <h3 class="card-title">⚖️ Komparasi Hasil dengan Jurnal Polinema</h3>
+            <h3 class="card-title">Evaluasi & Komparasi Jurnal Polinema</h3>
         </div>
         <p style="color: var(--text-muted); font-size: 0.92rem; margin-bottom: 1.2rem;">
-            Menjawab kriteria butir ke-8 soal UTS: Analisis persamaan, perbedaan, dan penyebab variasi hasil model web kami terhadap publikasi resmi di <strong>Jurnal Informatika Polinema (2024)</strong>.
+            Kriteria butir ke-8 soal UTS: Analisis persamaan, perbedaan, dan penyebab variasi hasil model terhadap publikasi resmi di Jurnal Informatika Polinema (2024).
         </p>
-        <a href="{{ url_for('komparasi_page') }}" class="btn btn-secondary" style="font-size: 0.9rem;">
-            📑 Lihat Analisis Komparasi Jurnal &rarr;
+        <a href="{{ url_for('evaluasi_page') }}" class="btn btn-secondary" style="font-size: 0.9rem;">
+            Lihat Evaluasi & Komparasi &rarr;
         </a>
     </div>
 </div>
