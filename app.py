@@ -35,7 +35,6 @@ def index():
     metrics = load_metrics()
     df = load_dataset_df()
     
-    # Siapkan data untuk grafik historis di beranda
     chart_labels = df['periode'].tolist() if not df.empty else []
     chart_sales = df['penjualan_unit'].tolist() if not df.empty else []
     
@@ -61,7 +60,6 @@ def download_dataset():
 def evaluasi_page():
     metrics = load_metrics()
     
-    # Ambil data evaluasi test set untuk grafik
     test_results = metrics.get('model_evaluation', {}).get('test_results', [])
     test_labels = [item['periode'] for item in test_results]
     actual_vals = [item['aktual'] for item in test_results]
@@ -79,55 +77,63 @@ def prediksi_page():
     artifacts = load_model_artifacts()
     df = load_dataset_df()
     
-    future_labels_all = ['2023-06 (Juni 2023)', '2023-07 (Juli 2023)', '2023-08 (Agustus 2023)', 
-                         '2023-09 (September 2023)', '2023-10 (Oktober 2023)', '2023-11 (November 2023)']
-    
-    selected_steps = 1
-    forecast_results = None
+    # 10 data riil terakhir GAIKINDO sebagai nilai default form
+    if not df.empty:
+        default_inputs = df['penjualan_unit'].iloc[-10:].tolist()
+        default_labels = df['periode'].iloc[-10:].tolist()
+    else:
+        default_inputs = [27239, 26367, 30844, 33449, 33740, 26667, 30632, 28970, 27336, 21518]
+        default_labels = [f"Bulan {i+1}" for i in range(10)]
+        
+    current_inputs = list(default_inputs)
+    result = None
     
     if request.method == 'POST':
         try:
-            selected_steps = int(request.form.get('horizon', 1))
-        except ValueError:
-            selected_steps = 1
+            # Ambil 10 angka yang diinput manual oleh user/dosen
+            manual_vals = []
+            for i in range(1, 11):
+                val = float(request.form.get(f'm{i}', default_inputs[i-1]))
+                manual_vals.append(val)
+                
+            current_inputs = manual_vals
             
-        if artifacts:
-            mlp = artifacts['model']
-            scaler_X = artifacts['scaler_X']
-            scaler_y = artifacts['scaler_y']
-            current_window = list(artifacts['last_window'])
-            
-            forecast_items = []
-            for i in range(selected_steps):
-                input_scaled = scaler_X.transform([current_window])
-                pred_s = mlp.predict(input_scaled)
-                pred_val = float(scaler_y.inverse_transform(pred_s.reshape(-1, 1))[0][0])
+            if artifacts:
+                mlp = artifacts['model']
+                scaler_X = artifacts['scaler_X']
+                scaler_y = artifacts['scaler_y']
+                
+                # Transformasi dan prediksi menggunakan MLP
+                input_scaled = scaler_X.transform([manual_vals])
+                pred_scaled = mlp.predict(input_scaled)
+                pred_val = float(scaler_y.inverse_transform(pred_scaled.reshape(-1, 1))[0][0])
                 pred_int = int(round(pred_val))
                 
-                forecast_items.append({
-                    'step': i + 1,
-                    'periode': future_labels_all[i],
-                    'prediksi_unit': pred_int
-                })
+                # Hitung tren kenaikan/penurunan dibanding bulan terakhir
+                last_month_val = manual_vals[-1]
+                diff = pred_int - last_month_val
+                pct_change = round((diff / last_month_val) * 100, 2)
                 
-                # geser window
-                current_window.pop(0)
-                current_window.append(pred_val)
+                # Siapkan data untuk grafik visual interaktif (10 input + 1 prediksi)
+                chart_history = [int(v) for v in manual_vals]
                 
-            forecast_results = forecast_items
+                result = {
+                    'prediction_val': pred_int,
+                    'last_val': int(last_month_val),
+                    'diff': int(diff),
+                    'pct_change': pct_change,
+                    'is_increase': diff >= 0,
+                    'chart_history': chart_history,
+                    'chart_labels': [f"Bulan {i}" for i in range(1, 11)] + ["Prediksi Bulan ke-11"]
+                }
+        except Exception as e:
+            result = {'error': str(e)}
             
-    # Default 1 bulan jika belum submit
-    if forecast_results is None and metrics.get('forecast_future'):
-        forecast_results = [{
-            'step': 1,
-            'periode': future_labels_all[0],
-            'prediksi_unit': metrics['forecast_future']['predictions'][0]
-        }]
-        
     return render_template('prediksi.html', 
                            metrics=metrics, 
-                           selected_steps=selected_steps,
-                           forecast_results=forecast_results)
+                           current_inputs=current_inputs,
+                           default_inputs=default_inputs,
+                           result=result)
 
 @app.route('/komparasi')
 def komparasi_page():

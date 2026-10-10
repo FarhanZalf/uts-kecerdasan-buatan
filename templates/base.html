@@ -24,9 +24,8 @@
             <ul class="nav-links">
                 <li><a href="{{ url_for('index') }}" class="{% if request.path == '/' %}active{% endif %}">🏠 Beranda</a></li>
                 <li><a href="{{ url_for('dataset_page') }}" class="{% if request.path == '/dataset' %}active{% endif %}">📊 Dataset GAIKINDO</a></li>
-                <li><a href="{{ url_for('evaluasi_page') }}" class="{% if request.path == '/evaluasi' %}active{% endif %}">📈 Evaluasi MLP</a></li>
-                <li><a href="{{ url_for('prediksi_page') }}" class="{% if request.path == '/prediksi' %}active{% endif %}">🔮 Uji Prediksi Waktu</a></li>
-                <li><a href="{{ url_for('komparasi_page') }}" class="{% if request.path == '/komparasi' %}active{% endif %}">⚖️ Komparasi Jurnal Polinema</a></li>
+                <li><a href="{{ url_for('evaluasi_page') }}" class="{% if request.path in ['/evaluasi', '/komparasi'] %}active{% endif %}">📈 Evaluasi & Komparasi</a></li>
+                <li><a href="{{ url_for('prediksi_page') }}" class="{% if request.path == '/prediksi' %}active{% endif %}">🔮 Uji Prediksi Manual</a></li>
             </ul>
         </div>
     </nav>

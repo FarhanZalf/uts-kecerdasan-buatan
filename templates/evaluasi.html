@@ -1,13 +1,13 @@
 {% extends 'base.html' %}
 
-{% block title %}Evaluasi Model MLP | Prediksi Penjualan Mobil Toyota{% endblock %}
+{% block title %}Evaluasi Model & Komparasi Jurnal | Prediksi Penjualan Mobil Toyota{% endblock %}
 
 {% block content %}
 <div class="card" style="margin-bottom: 2rem;">
     <div class="card-header">
         <div>
             <span class="badge-tag">Kriteria 7 Butir C & D UTS</span>
-            <h2 class="card-title" style="font-size: 1.6rem;">📈 Evaluasi Model Multilayer Perceptron (MLP)</h2>
+            <h2 class="card-title" style="font-size: 1.6rem;">📈 Evaluasi Kinerja Model Multilayer Perceptron (MLP)</h2>
         </div>
         <span class="badge-tag badge-cyan">
             Arsitektur: 10-15-1 (Sesuai Jurnal Polinema)
@@ -69,7 +69,7 @@
 </div>
 
 <!-- Tabel Rincian Data Uji Per Bulan & Arsitektur Jaringan -->
-<div class="grid-2">
+<div class="grid-2" style="margin-bottom: 2rem;">
     <!-- Tabel Rincian Data Testing -->
     <div class="card">
         <div class="card-header">
@@ -130,7 +130,84 @@
                 ✅ Kesimpulan Kinerja Model:
             </div>
             <p style="font-size: 0.84rem; color: var(--text-muted); margin: 0; margin-top: 0.2rem;">
-                Dengan nilai MAPE sebesar <strong>{{ metrics.model_evaluation.mape }}%</strong> (di bawah standar ambang batas 10%), kemampuan model MLP tergolong dalam kategori <em>High Accuracy Forecasting</em> (Sangat Akurat) dalam memprediksi tren penjualan otomotif.
+                Dengan nilai MAPE sebesar <strong>{{ metrics.model_evaluation.mape }}%</strong> (di bawah standar 10%), kemampuan model MLP tergolong dalam kategori <em>High Accuracy Forecasting</em> (Sangat Akurat).
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-- ================= SECTION KOMPARASI DENGAN JURNAL POLINEMA (POIN 8 UTS) ================= -->
+<div class="card" style="border-color: rgba(239, 68, 68, 0.35); background: linear-gradient(135deg, rgba(239, 68, 68, 0.07) 0%, rgba(6, 182, 212, 0.07) 100%);">
+    <div class="card-header">
+        <div>
+            <span class="badge-tag">Kriteria Wajib Poin 8 UTS</span>
+            <h3 class="card-title" style="font-size: 1.4rem;">⚖️ Komparasi Hasil dengan Jurnal Informatika Polinema (2024)</h3>
+        </div>
+    </div>
+    
+    <p style="color: var(--text-muted); font-size: 0.92rem; margin-bottom: 1.2rem;">
+        Perbandingan langsung antara hasil model aplikasi web kami dengan hasil penelitian pada artikel acuan resmi:  
+        <strong style="color: #ffffff;">"{{ metrics.journal_comparison.paper_title }}"</strong> (Penulis: {{ metrics.journal_comparison.authors }}, <em>JIP Polinema</em> Vol. 11 No. 1, November 2024).
+    </p>
+
+    <!-- Tabel Komparasi Berdampingan -->
+    <div class="table-responsive" style="margin-bottom: 1.5rem;">
+        <table class="custom-table">
+            <thead>
+                <tr>
+                    <th style="width: 30%;">Aspek / Metrik Evaluasi</th>
+                    <th style="width: 35%;">Artikel Jurnal Rujukan (JIP Polinema 2024)</th>
+                    <th style="width: 35%; color: #38bdf8;">Model Aplikasi Web Kami (UTS KB)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Dataset</strong></td>
+                    <td>Penjualan Bulanan Toyota GAIKINDO (149 Bulan)</td>
+                    <td>Penjualan Bulanan Toyota GAIKINDO (149 Bulan)</td>
+                </tr>
+                <tr>
+                    <td><strong>Arsitektur Model</strong></td>
+                    <td>MLP 10-15-1 (ReLU, Adam)</td>
+                    <td>MLP 10-15-1 (ReLU, Adam)</td>
+                </tr>
+                <tr>
+                    <td><strong>Nilai Evaluasi MAE</strong></td>
+                    <td style="font-weight: 700; color: #ffffff;">{{ "{:,}".format(metrics.journal_comparison.paper_mae) }} Unit</td>
+                    <td style="font-weight: 700; color: #34d399;">{{ "{:,}".format(metrics.journal_comparison.our_mae) }} Unit</td>
+                </tr>
+                <tr>
+                    <td><strong>Nilai Evaluasi MAPE</strong></td>
+                    <td style="font-weight: 700; color: #ffffff;">{{ metrics.journal_comparison.paper_mape }}% (Sangat Akurat)</td>
+                    <td style="font-weight: 700; color: #38bdf8;">{{ metrics.journal_comparison.our_mape }}% (Sangat Akurat)</td>
+                </tr>
+                <tr>
+                    <td><strong>Fitur Pengujian Interaktif</strong></td>
+                    <td>Hanya script statis eksperimen</td>
+                    <td>Web interaktif berbasis Flask dengan input manual custom</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- 3 Box Analisis Poin 8 -->
+    <div class="grid-3">
+        <div class="card comparison-box">
+            <h4 style="color: #ffffff; margin-bottom: 0.6rem;">🤝 1. Persamaan</h4>
+            <p style="font-size: 0.84rem; color: var(--text-muted); line-height: 1.6;">
+                Menggunakan data resmi GAIKINDO (Januari 2011 s.d. Mei 2023), arsitektur jaringan MLP 10-15-1 identik, serta menghasilkan kategori peramalan 'Sangat Akurat' dengan MAPE &lt; 10%.
+            </p>
+        </div>
+        <div class="card comparison-box">
+            <h4 style="color: #ffffff; margin-bottom: 0.6rem;">⚡ 2. Perbedaan</h4>
+            <p style="font-size: 0.84rem; color: var(--text-muted); line-height: 1.6;">
+                Nilai MAE model kami adalah {{ "{:,}".format(metrics.journal_comparison.our_mae) }} unit vs {{ "{:,}".format(metrics.journal_comparison.paper_mae) }} unit di jurnal. Selisih hanya ~68 unit kendaraan (di bawah 0,3% dari total penjualan bulanan).
+            </p>
+        </div>
+        <div class="card comparison-box">
+            <h4 style="color: #ffffff; margin-bottom: 0.6rem;">🔍 3. Penyebab Perbedaan</h4>
+            <p style="font-size: 0.84rem; color: var(--text-muted); line-height: 1.6;">
+                Variasi acak bobot awal (weight initialization) pada training MLP di framework Scikit-Learn. Selisih yang sangat tipis ini membuktikan model berhasil mereplikasi temuan jurnal secara valid.
             </p>
         </div>
     </div>

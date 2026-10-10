@@ -1,108 +1,202 @@
 {% extends 'base.html' %}
 
-{% block title %}Uji Prediksi Waktu | Prediksi Penjualan Mobil Toyota{% endblock %}
+{% block title %}Uji Prediksi Manual | Prediksi Penjualan Mobil Toyota{% endblock %}
 
 {% block content %}
 <div class="card" style="margin-bottom: 2rem;">
     <div class="card-header">
         <div>
             <span class="badge-tag">Kriteria 7 Butir E UTS</span>
-            <h2 class="card-title" style="font-size: 1.6rem;">🔮 Uji Prediksi Penjualan untuk Periode Waktu Tertentu</h2>
+            <h2 class="card-title" style="font-size: 1.6rem;">🔮 Uji Prediksi Manual & Simulasi Skenario Pasar</h2>
         </div>
         <span class="badge-tag badge-cyan">
-            Multi-Step Time Series Forecasting
+            Input Bebas Pengujian Dosen
         </span>
     </div>
     <p style="color: var(--text-muted);">
-        Sesuai butir wajib tugas UTS (<em>"Melakukan prediksi untuk periode/waktu tertentu"</em>), fitur ini memanfaatkan model <strong>Multilayer Perceptron (MLP)</strong> untuk melakukan peramalan iteratif berbasis <em>sliding window</em> ke depan (bulan Juni 2023 dan seterusnya) berdasarkan pola historis 10 bulan terakhir.
+        Halaman ini dirancang khusus untuk sesi pengujian dan demo langsung. Anda atau dosen penguji dapat <strong>mengetikkan angka penjualan sendiri secara bebas</strong> pada 10 bulan sebelumnya untuk melihat bagaimana model <strong>Multilayer Perceptron (MLP)</strong> memprediksi penjualan mobil pada bulan berikutnya.
     </p>
+
+    <!-- Tombol Pintas Skenario Cepat -->
+    <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 0.8rem; margin-top: 1.2rem; padding-top: 1.2rem; border-top: 1px solid var(--border-color);">
+        <span style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600;">⚡ Contoh Pengisian Cepat:</span>
+        <button type="button" class="btn btn-secondary" onclick="fillScenario('normal')" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">
+            📊 1. Data Riil Terakhir GAIKINDO (~28.000)
+        </button>
+        <button type="button" class="btn btn-secondary" onclick="fillScenario('krisis')" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; border-color: rgba(239, 68, 68, 0.4); color: #f87171;">
+            📉 2. Simulasi Krisis / Pasar Anjlok (~12.000)
+        </button>
+        <button type="button" class="btn btn-secondary" onclick="fillScenario('booming')" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; border-color: rgba(16, 185, 129, 0.4); color: #34d399;">
+            🚀 3. Simulasi Booming / Promo GIIAS (~36.000)
+        </button>
+    </div>
 </div>
 
 <div class="grid-2">
-    <!-- Form Pemilihan Periode Prediksi -->
+    <!-- Form Input Manual 10 Bulan -->
     <div class="card">
-        <div class="card-header">
-            <h3 class="card-title">⚙️ Konfigurasi Periode Masa Depan</h3>
-        </div>
-        
-        <form method="POST" action="{{ url_for('prediksi_page') }}">
-            <div class="form-group">
-                <label class="form-label">Tentukan Horizon Periode yang Ingin Diprediksi:</label>
-                <select name="horizon" class="form-control" style="font-size: 1rem; padding: 0.85rem;">
-                    <option value="1" {% if selected_steps == 1 %}selected{% endif %}>
-                        📅 1 Bulan ke Depan (Juni 2023)
-                    </option>
-                    <option value="3" {% if selected_steps == 3 %}selected{% endif %}>
-                        📅 3 Bulan ke Depan (Juni – Agustus 2023)
-                    </option>
-                    <option value="6" {% if selected_steps == 6 %}selected{% endif %}>
-                        📅 6 Bulan ke Depan (Juni – November 2023)
-                    </option>
-                </select>
+        <form method="POST" action="{{ url_for('prediksi_page') }}" id="manualForm">
+            <div class="card-header">
+                <h3 class="card-title">📝 Input Riwayat 10 Bulan Terakhir (Unit Mobil)</h3>
+            </div>
+            
+            <p style="font-size: 0.82rem; color: var(--text-dim); margin-bottom: 1.2rem;">
+                Ketikkan angka penjualan unit mobil pada masing-masing kotak input di bawah:
+            </p>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.9rem;">
+                {% for i in range(1, 11) %}
+                <div class="form-group" style="margin-bottom: 0.5rem;">
+                    <label class="form-label" style="font-size: 0.8rem; margin-bottom: 0.2rem;">
+                        Bulan ke-{{ i }} {% if i == 10 %}<span style="color: #f87171;">(Bulan Terakhir)</span>{% endif %}
+                    </label>
+                    <input type="number" step="1" min="100" max="100000" class="form-control manual-input" 
+                           id="input_m{{ i }}" name="m{{ i }}" value="{{ current_inputs[i-1] | int }}" required 
+                           style="padding: 0.6rem 0.8rem; font-family: var(--font-mono); font-weight: 600;">
+                </div>
+                {% endfor %}
             </div>
 
-            <div style="padding: 1rem; background: rgba(255, 255, 255, 0.03); border-radius: var(--radius-sm); margin-bottom: 1.5rem; font-size: 0.85rem; color: var(--text-muted); border: 1px solid var(--border-color);">
-                <strong style="color: #ffffff;">💡 Cara Kerja Prediksi:</strong><br>
-                Model mengambil 10 bulan data historis terakhir (Agustus 2022 s.d. Mei 2023) sebagai input jendela sliding window, menormalkannya, lalu menghitung prediksi bulan ke depan secara iteratif.
-            </div>
-
-            <button type="submit" class="btn btn-primary" style="width: 100%; font-size: 1rem;">
-                🚀 Jalankan Prediksi Periode &rarr;
+            <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1.5rem; font-size: 1rem;">
+                🔍 Prediksi Penjualan Bulan Berikutnya &rarr;
             </button>
         </form>
     </div>
 
-    <!-- Kartu Hasil Prediksi -->
+    <!-- Hasil Prediksi -->
     <div>
-        {% if forecast_results %}
+        {% if result and not result.error %}
         <div class="forecast-card">
             <span class="badge-tag badge-cyan" style="margin-bottom: 0.5rem;">
-                Hasil Peramalan Model MLP
+                Hasil Prediksi Model MLP (Bulan ke-11)
             </span>
+            
             <div style="font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase;">
-                Estimasi Penjualan Periode Terdekat ({{ forecast_results[0].periode }}):
-            </div>
-            <div class="forecast-val">
-                {{ "{:,}".format(forecast_results[0].prediksi_unit) }} <span style="font-size: 1.2rem; color: var(--text-dim); font-weight: 500;">Unit Mobil</span>
+                Estimasi Penjualan Bulan Berikutnya:
             </div>
             
-            <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 1.5rem;">
-                Prediksi ini mengindikasikan volume distribusi Toyota di Indonesia tetap kuat dan stabil di atas rata-rata 25.000 unit per bulan.
-            </p>
-
-            <!-- Tabel Proyeksi Tahapan -->
-            <div class="table-responsive">
-                <table class="custom-table" style="font-size: 0.85rem;">
-                    <thead>
-                        <tr>
-                            <th>Bulan ke-</th>
-                            <th>Periode Target</th>
-                            <th>Hasil Prediksi</th>
-                            <th>Rekomendasi Manufaktur</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for item in forecast_results %}
-                        <tr>
-                            <td><strong>Step +{{ item.step }}</strong></td>
-                            <td style="color: #ffffff;">{{ item.periode }}</td>
-                            <td>
-                                <strong style="color: #38bdf8; font-family: var(--font-mono); font-size: 1rem;">
-                                    {{ "{:,}".format(item.prediksi_unit) }} Unit
-                                </strong>
-                            </td>
-                            <td>
-                                <span style="color: #34d399; font-size: 0.8rem;">
-                                    ✓ Alokasi stok pabrik normal
-                                </span>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+            <div class="forecast-val">
+                {{ "{:,}".format(result.prediction_val) }} <span style="font-size: 1.2rem; color: var(--text-dim); font-weight: 500;">Unit Mobil</span>
             </div>
+
+            <!-- Analisis Tren Naik / Turun -->
+            <div style="padding: 0.8rem 1rem; border-radius: var(--radius-sm); margin-bottom: 1.2rem; display: flex; align-items: center; justify-content: space-between; background: rgba(0,0,0,0.3); border: 1px solid var(--border-color);">
+                <div>
+                    <span style="font-size: 0.78rem; color: var(--text-dim); display: block;">Perbandingan dgn Bulan ke-10 ({{ "{:,}".format(result.last_val) }} Unit):</span>
+                    <strong style="font-size: 0.95rem; color: {% if result.is_increase %}#34d399{% else %}#f87171{% endif %};">
+                        {% if result.is_increase %}▲ Naik +{{ "{:,}".format(result.diff) }} Unit ({{ result.pct_change }}%){% else %}▼ Turun {{ "{:,}".format(result.diff) }} Unit ({{ result.pct_change }}%){% endif %}
+                    </strong>
+                </div>
+                <span class="badge-tag" style="margin: 0; background: {% if result.is_increase %}rgba(16,185,129,0.2){% else %}rgba(239,68,68,0.2){% endif %}; color: {% if result.is_increase %}#34d399{% else %}#f87171{% endif %};">
+                    {% if result.is_increase %}Tren Positif{% else %}Tren Koreksi{% endif %}
+                </span>
+            </div>
+
+            <!-- Grafik Garis Visualisasi 10 Titik Input + 1 Titik Prediksi -->
+            <div style="margin-top: 1rem;">
+                <div style="font-size: 0.85rem; font-weight: 600; color: #ffffff; margin-bottom: 0.4rem;">
+                    📈 Visualisasi 10 Bulan Input vs Titik Prediksi:
+                </div>
+                <div style="height: 220px; position: relative;">
+                    <canvas id="predictionScenarioChart"></canvas>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="card" style="height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 3rem 2rem;">
+            <div style="font-size: 3.5rem; margin-bottom: 1rem;">🚗</div>
+            <h3 style="font-family: var(--font-heading); font-size: 1.3rem; margin-bottom: 0.6rem; color: #ffffff;">
+                Form Uji Siap Digunakan
+            </h3>
+            <p style="color: var(--text-muted); font-size: 0.9rem; max-width: 360px;">
+                Ubah angka penjualan pada 10 kotak input di sebelah kiri, atau gunakan tombol <em>Contoh Pengisian Cepat</em>, lalu klik <strong>Prediksi Penjualan Bulan Berikutnya</strong>.
+            </p>
         </div>
         {% endif %}
     </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Fungsi Pengisian Cepat Skenario
+    const scenarios = {
+        normal: [27239, 26367, 30844, 33449, 33740, 26667, 30632, 28970, 27336, 28178],
+        krisis: [24150, 25120, 17850, 2093, 672, 3775, 7332, 8740, 13234, 16419],
+        booming: [31825, 34105, 35840, 32980, 34500, 36120, 37540, 34890, 36250, 38105]
+    };
+
+    function fillScenario(type) {
+        const data = scenarios[type];
+        if (!data) return;
+        for (let i = 1; i <= 10; i++) {
+            const el = document.getElementById('input_m' + i);
+            if (el) el.value = data[i - 1];
+        }
+    }
+
+    {% if result and not result.error %}
+    document.addEventListener('DOMContentLoaded', function () {
+        const ctx = document.getElementById('predictionScenarioChart');
+        if (ctx) {
+            const inputLabels = {{ result.chart_labels | tojson }};
+            const historyData = {{ result.chart_history | tojson }};
+            const predVal = {{ result.prediction_val }};
+
+            // Gabungkan dataset history (10 titik) dan dataset prediksi (titik ke-11)
+            const fullHistory = [...historyData, null];
+            const fullPred = Array(10).fill(null).concat([predVal]);
+            fullPred[9] = historyData[9]; // hubungkan garis dari titik 10 ke titik 11
+
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: inputLabels,
+                    datasets: [
+                        {
+                            label: 'Input Riwayat (10 Bulan)',
+                            data: fullHistory,
+                            borderColor: '#06b6d4',
+                            backgroundColor: 'rgba(6, 182, 212, 0.15)',
+                            borderWidth: 2,
+                            pointRadius: 4,
+                            pointBackgroundColor: '#06b6d4',
+                            tension: 0.2
+                        },
+                        {
+                            label: 'Hasil Prediksi (Bulan ke-11)',
+                            data: fullPred,
+                            borderColor: '#ef4444',
+                            borderDash: [5, 5],
+                            borderWidth: 3,
+                            pointRadius: 6,
+                            pointBackgroundColor: '#ef4444',
+                            tension: 0.2
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { labels: { color: '#94a3b8', font: { size: 11 } } },
+                        tooltip: {
+                            backgroundColor: '#0f172a',
+                            callbacks: {
+                                label: function (c) {
+                                    return c.dataset.label + ': ' + c.parsed.y.toLocaleString('id-ID') + ' Unit';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8', font: { size: 10 } } },
+                        y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8', font: { size: 10 } } }
+                    }
+                }
+            });
+        }
+    });
+    {% endif %}
+</script>
 {% endblock %}
