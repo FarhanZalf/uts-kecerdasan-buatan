@@ -8,9 +8,6 @@
         <div>
             <h2 class="card-title" style="font-size: 1.6rem;">Evaluasi Kinerja Model Multilayer Perceptron (MLP)</h2>
         </div>
-        <span class="badge-tag badge-cyan">
-            Arsitektur: 10-15-1 (Sesuai Jurnal Polinema)
-        </span>
     </div>
     <p style="color: var(--text-muted);">
         Model dievaluasi menggunakan metrik standar regresi time series yang disyaratkan: 
@@ -214,18 +211,12 @@
 {% endblock %}
 
 {% block scripts %}
+<script id="eval-test-data" type="application/json">{{ {'labels': test_labels, 'actual': actual_vals, 'pred': pred_vals} | tojson }}</script>
+<script id="eval-full-data" type="application/json">{{ {'labels': full_labels, 'actual': full_actual, 'pred': full_pred} | tojson }}</script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        const testData = {
-            labels: {{ test_labels | tojson }},
-            actual: {{ actual_vals | tojson }},
-            pred: {{ pred_vals | tojson }}
-        };
-        const fullData = {
-            labels: {{ full_labels | tojson }},
-            actual: {{ full_actual | tojson }},
-            pred: {{ full_pred | tojson }}
-        };
+        const testData = JSON.parse(document.getElementById('eval-test-data').textContent);
+        const fullData = JSON.parse(document.getElementById('eval-full-data').textContent);
 
         if (window.initEvalChartSwitcher) {
             window.initEvalChartSwitcher('actualVsPredChart', testData, fullData);
